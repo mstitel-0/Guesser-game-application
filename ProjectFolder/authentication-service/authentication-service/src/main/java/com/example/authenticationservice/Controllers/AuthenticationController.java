@@ -1,5 +1,6 @@
 package com.example.authenticationservice.Controllers;
 
+import com.example.authenticationservice.DTOs.LoginRequest;
 import com.example.authenticationservice.DTOs.RegistrationRequest;
 import com.example.authenticationservice.Services.AuthenticationService;
 import jakarta.validation.Valid;
@@ -21,4 +22,8 @@ public class AuthenticationController {
         return ResponseEntity.ok("New user has been registered successfully");
     }
 
+    @GetMapping("/login")
+    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.ok(authenticationService.login(loginRequest));
+    }
 }

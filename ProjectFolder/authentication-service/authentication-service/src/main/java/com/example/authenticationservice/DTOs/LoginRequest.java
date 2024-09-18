@@ -1,4 +1,4 @@
 package com.example.authenticationservice.DTOs;
 
-public class LoginRequest {
+public record LoginRequest(String email, String password) {
 }
