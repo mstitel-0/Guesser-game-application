@@ -1,5 +1,6 @@
 package com.example.authenticationservice.Controllers;
 
+import com.example.authenticationservice.DTOs.LoginRequest;
 import com.example.authenticationservice.DTOs.RegistrationRequest;
 import com.example.authenticationservice.Services.AuthenticationService;
 import jakarta.validation.Valid;
@@ -18,7 +19,18 @@ public class AuthenticationController {
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@Valid @RequestBody RegistrationRequest registrationRequest) {
         authenticationService.register(registrationRequest);
-        return ResponseEntity.ok("New user has been registered successfully");
+        return ResponseEntity.ok("Confirm your email.");
+    }
+
+    @GetMapping("/confirm")
+    public ResponseEntity<String> confirm(@RequestParam String token) {
+        authenticationService.activate(token);
+        return ResponseEntity.ok("Email has been successfully confirmed.");
+    }
+
+    @GetMapping("/login")
+    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.ok(authenticationService.login(loginRequest));
     }
 
 }
