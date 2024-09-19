@@ -1,8 +1,12 @@
 package com.example.authenticationservice.Controllers;
 
 
+
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,6 +27,20 @@ public class GlobalExceptionHandler {
                         FieldError::getField,
                         FieldError::getDefaultMessage
                 )), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<String> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        return new ResponseEntity<>("User not found with given email: " + ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<String> handleBadCredentialsException(BadCredentialsException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<String> handleJWTVerificationException(JwtException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 
 }

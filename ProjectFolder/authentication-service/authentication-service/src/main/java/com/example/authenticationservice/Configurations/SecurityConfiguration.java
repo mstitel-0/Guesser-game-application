@@ -1,5 +1,6 @@
 package com.example.authenticationservice.Configurations;
 
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,7 +13,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(request -> request
-                .requestMatchers("/api/authentication/*").permitAll()
+                .requestMatchers("/api/authentication/**").permitAll()
                 .anyRequest().authenticated());
 
         http.csrf(csrf -> csrf.disable());
