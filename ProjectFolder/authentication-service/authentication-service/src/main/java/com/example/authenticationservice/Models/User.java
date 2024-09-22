@@ -21,6 +21,12 @@ public class User {
     public User() {
     }
 
+    public User(String email, String password, boolean isActivated) {
+        this.email = email;
+        this.password = password;
+        this.isActivated = isActivated;
+    }
+
     public Long getId() {
         return Id;
     }

@@ -51,6 +51,7 @@ public class AuthenticationService {
         if (!bCryptPasswordEncoder.matches(loginRequest.password(), user.getPassword())) {
             throw new BadCredentialsException("Incorrect password");
         }
+        //todo: user's not activated case handling
         return jwtUtil.generateToken(loginRequest.email());
     }
 
