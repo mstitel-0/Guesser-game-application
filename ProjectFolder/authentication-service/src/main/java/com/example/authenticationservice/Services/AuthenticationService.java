@@ -5,6 +5,7 @@ import com.example.authenticationservice.DTOs.RegistrationRequest;
 import com.example.authenticationservice.JwtUtil;
 import com.example.authenticationservice.Models.User;
 import com.example.authenticationservice.Repositories.UserRepository;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,13 +17,13 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtUtil jwtUtil;
-    private final EmailService emailService;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
-    public AuthenticationService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtil jwtUtil, EmailService emailService) {
+    public AuthenticationService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtil jwtUtil, KafkaTemplate<String, String> kafkaTemplate) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.jwtUtil = jwtUtil;
-        this.emailService = emailService;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Transactional
@@ -32,8 +33,9 @@ public class AuthenticationService {
         user.setPassword(bCryptPasswordEncoder.encode(registrationRequest.password()));
         user.setActivated(false);
         userRepository.save(user);
-        emailService.sendEmail(registrationRequest.email(),
-                jwtUtil.generateEmailConfirmationToken(registrationRequest.email()));
+        kafkaTemplate.send("mail-confirmation",
+                registrationRequest.email() + ":" +
+                jwtUtil.generateToken(registrationRequest.email()));
     }
 
     @Transactional
