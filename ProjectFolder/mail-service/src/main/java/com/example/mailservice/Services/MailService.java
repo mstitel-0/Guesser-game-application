@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -36,6 +37,5 @@ public class MailService {
         message.setSubject("Mail confirmation");
         message.setText("Please, follow this link to confirm your account.\n" + CONFIRMATION_LINK + confirmationToken);
         mailSender.send(message);
-        
     }
 }

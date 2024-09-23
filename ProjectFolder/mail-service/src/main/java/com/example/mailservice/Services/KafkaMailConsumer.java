@@ -1,5 +1,6 @@
 package com.example.mailservice.Services;
 
+import com.example.mailservice.DTOs.MailConfirmationRequest;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +13,7 @@ public class KafkaMailConsumer {
     }
 
     @KafkaListener(topics = "mail-confirmation", groupId = "mail-service")
-    public void processMessage(String message) {
-        String[] parts = message.split(":");
-        String email = parts[0];
-        String token = parts[1];
-
-        mailService.sendEmail(email, token);
+    public void processMessage(MailConfirmationRequest request) {
+        mailService.sendEmail(request.email(), request.token());
     }
 }

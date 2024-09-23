@@ -1,6 +1,7 @@
 package com.example.authenticationservice.Services;
 
 import com.example.authenticationservice.DTOs.LoginRequest;
+import com.example.authenticationservice.DTOs.MailConfirmationRequest;
 import com.example.authenticationservice.DTOs.RegistrationRequest;
 import com.example.authenticationservice.JwtUtil;
 import com.example.authenticationservice.Models.User;
@@ -17,25 +18,25 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtUtil jwtUtil;
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, MailConfirmationRequest> kafkaTemplate;
 
-    public AuthenticationService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtil jwtUtil, KafkaTemplate<String, String> kafkaTemplate) {
+    public AuthenticationService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtil jwtUtil, KafkaTemplate<String, MailConfirmationRequest> kafkaTemplate) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.jwtUtil = jwtUtil;
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    @Transactional
     public void register(RegistrationRequest registrationRequest) {
         User user = new User();
         user.setEmail(registrationRequest.email());
         user.setPassword(bCryptPasswordEncoder.encode(registrationRequest.password()));
         user.setActivated(false);
         userRepository.save(user);
-        kafkaTemplate.send("mail-confirmation",
-                registrationRequest.email() + ":" +
+        MailConfirmationRequest request = new MailConfirmationRequest(registrationRequest.email(),
                 jwtUtil.generateToken(registrationRequest.email()));
+
+        kafkaTemplate.send("mail-confirmation", request);
     }
 
     @Transactional
