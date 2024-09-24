@@ -3,6 +3,7 @@ package com.example.authenticationservice.Services;
 import com.example.authenticationservice.DTOs.LoginRequest;
 import com.example.authenticationservice.DTOs.MailConfirmationRequest;
 import com.example.authenticationservice.DTOs.RegistrationRequest;
+import com.example.authenticationservice.Exceptions.UserNotActivatedException;
 import com.example.authenticationservice.JwtUtil;
 import com.example.authenticationservice.Models.User;
 import com.example.authenticationservice.Repositories.UserRepository;
@@ -12,6 +13,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.NotActiveException;
 
 @Service
 public class AuthenticationService {
@@ -51,6 +54,9 @@ public class AuthenticationService {
     public String login(LoginRequest loginRequest) {
         User user = userRepository.findByEmail(loginRequest.email())
                 .orElseThrow(() -> new UsernameNotFoundException(loginRequest.email()));
+        if(!user.isActivated()) {
+            throw new UserNotActivatedException("Confirm your email first!");
+        }
         if (!bCryptPasswordEncoder.matches(loginRequest.password(), user.getPassword())) {
             throw new BadCredentialsException("Incorrect password");
         }
