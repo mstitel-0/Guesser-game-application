@@ -1,12 +1,17 @@
-package com.example.authenticationservice.Services;
+package com.example.mailservice.Services;
 
+import com.example.mailservice.Models.Confirmation;
+import com.example.mailservice.Repositories.ConfirmationRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
-public class EmailService {
+public class MailService {
 
     @Value("${spring.mail.username}")
     private String senderMail;
@@ -15,11 +20,17 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
-    public EmailService(JavaMailSender mailSender) {
+    private final ConfirmationRepository confirmationRepository;
+
+    public MailService(JavaMailSender mailSender, ConfirmationRepository confirmationRepository) {
         this.mailSender = mailSender;
+        this.confirmationRepository = confirmationRepository;
     }
 
     public void sendEmail(String email, String confirmationToken) {
+        Confirmation confirmation = new Confirmation(email, LocalDateTime.now());
+        confirmationRepository.save(confirmation);
+
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(senderMail);
         message.setTo(email);
