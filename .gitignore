@@ -1,6 +1,3 @@
 
-ProjectFolder/authentication-service/authentication-service/src/main/resources/.env
-ProjectFolder/authentication-service/authentication-service/src/main/resources/application-dev.yml
-
-ProjectFolder/mail-service/src/main/resources/application-dev.yml
-ProjectFolder/authentication-service/src/main/resources/application-dev.yml
+project/authentication-service/src/main/resources/application-dev.yml
+project/mail-service/src/main/resources/application-dev.yml
