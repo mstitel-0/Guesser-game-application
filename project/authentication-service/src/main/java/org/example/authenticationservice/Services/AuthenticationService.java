@@ -28,6 +28,9 @@ public class AuthenticationService {
     }
 
     public void register(RegistrationRequest registrationRequest) {
+        if(userRepository.findByEmail(registrationRequest.email()).isPresent()) {
+            throw new BadCredentialsException("This email is already in use");
+        }
         User user = new User();
         user.setEmail(registrationRequest.email());
         user.setPassword(bCryptPasswordEncoder.encode(registrationRequest.password()));
@@ -57,7 +60,6 @@ public class AuthenticationService {
         if (!bCryptPasswordEncoder.matches(loginRequest.password(), user.getPassword())) {
             throw new BadCredentialsException("Incorrect password");
         }
-        //todo: user's not activated case handling
         return jwtUtil.generateToken(loginRequest.email());
     }
 
