@@ -37,7 +37,7 @@ public class AuthenticationService {
         user.setActivated(false);
         userRepository.save(user);
         MailConfirmationRequest request = new MailConfirmationRequest(registrationRequest.email(),
-                jwtUtil.generateToken(registrationRequest.email()));
+                jwtUtil.generateEmailConfirmationToken(registrationRequest.email()));
 
         kafkaTemplate.send("mail-confirmation", request);
     }
