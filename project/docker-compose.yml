@@ -36,7 +36,8 @@ services:
 
   auth-service:
     build:
-      context: ./authentication-service
+      context: .
+      dockerfile: ./authentication-service/Dockerfile
     ports:
       - "8080:8080"
     depends_on:
@@ -46,7 +47,8 @@ services:
 
   mail-service:
     build:
-      context: ./mail-service
+      context: .
+      dockerfile: ./mail-service/Dockerfile
     ports:
       - "8081:8081"
     depends_on:
