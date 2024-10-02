@@ -1,0 +1,13 @@
+spring:
+  profiles:
+    active: dev
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: auth-service
+            uri: http://localhost:8080
+            predicates:
+            - Path=/api/authentication/**
+server:
+  port: 8085

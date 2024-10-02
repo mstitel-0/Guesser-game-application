@@ -13,6 +13,7 @@
         <module>mail-service</module>
         <module>authentication-service</module>
         <module>shared-dto</module>
+        <module>api-gateway</module>
     </modules>
 
     <properties>
