@@ -32,7 +32,12 @@ public class JwtUtil {
         return extractClaims(token).getSubject();
     }
 
+    public Boolean validateToken(String token, Claims claims) {
+        String username = extractClaims(token).getSubject();
+        return !isExpired(token) && claims.getSubject().equals(username);
+    }
+
     public Boolean isExpired(String token) {
-        return extractClaims(token).getExpiration().after(new Date());
+        return extractClaims(token).getExpiration().before(new Date());
     }
 }

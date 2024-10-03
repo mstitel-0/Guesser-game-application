@@ -8,6 +8,11 @@ spring:
           - id: auth-service
             uri: http://localhost:8080
             predicates:
-            - Path=/api/authentication/**
+              - Path=/api/authentication/**
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.circuitbreaker: DEBUG
+    io.github.resilience4j.circuitbreaker: DEBUG
 server:
   port: 8085
