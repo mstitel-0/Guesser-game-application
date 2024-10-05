@@ -1,4 +1,4 @@
-package org.example.apigateway;
+package org.example.apigateway.Security;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;

@@ -1,18 +1,11 @@
 spring:
   profiles:
     active: dev
-  cloud:
-    gateway:
-      mvc:
-        routes:
-          - id: auth-service
-            uri: http://localhost:8080
-            predicates:
-              - Path=/api/authentication/**
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
     org.springframework.cloud.circuitbreaker: DEBUG
     io.github.resilience4j.circuitbreaker: DEBUG
+    io.github.resilience4j: DEBUG
 server:
   port: 8085

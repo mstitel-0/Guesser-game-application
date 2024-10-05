@@ -29,6 +29,7 @@ public class GlobalExceptionHandler {
                         FieldError::getDefaultMessage
                 )), HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<String> handleUsernameNotFoundException(UsernameNotFoundException ex) {
         return new ResponseEntity<>("User not found with given email: " + ex.getMessage(), HttpStatus.NOT_FOUND);

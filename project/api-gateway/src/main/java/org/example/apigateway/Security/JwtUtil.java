@@ -1,4 +1,4 @@
-package org.example.apigateway;
+package org.example.apigateway.Security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -20,7 +20,7 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(Base64.getEncoder().encode(JWT_SECRET.getBytes()));
     }
 
-    public Claims extractClaims(String token) {
+    public Claims extractClaims(String token){
         return Jwts.parser()
                 .verifyWith(getSecretKey())
                 .build()
