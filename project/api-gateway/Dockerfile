@@ -19,8 +19,8 @@ RUN mvn clean package
 FROM amazoncorretto:21-alpine
 WORKDIR /app
 
-COPY --from=build /build/authentication-service/target/authentication-service-1.0-SNAPSHOT.jar auth-service.jar
+COPY --from=build /build/api-gateway/target/api-gateway-1.0-SNAPSHOT.jar api-gateway.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "auth-service.jar"]
+ENTRYPOINT ["java", "-jar", "api-gateway.jar"]

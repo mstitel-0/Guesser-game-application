@@ -1,11 +1,5 @@
 spring:
   profiles:
     active: dev
-logging:
-  level:
-    org.springframework.cloud.gateway: DEBUG
-    org.springframework.cloud.circuitbreaker: DEBUG
-    io.github.resilience4j.circuitbreaker: DEBUG
-    io.github.resilience4j: DEBUG
 server:
   port: 8085

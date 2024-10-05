@@ -16,12 +16,14 @@ import static org.springframework.cloud.gateway.server.mvc.predicate.GatewayRequ
 
 @Configuration
 public class ApiGatewayRouting {
+
     @Bean
     public RouterFunction<ServerResponse> authenticationRoute() {
         return route()
-                .route(path("/auth/**"), http("http://localhost:8080"))
+                .route(path("/auth/**"), http("http://auth-service:8080"))
                 .filter(rewritePath("/auth/(?<segment>.*)", "/api/authentication/${segment}"))
                 .filter(circuitBreaker("authenticationServiceCircuitBreaker", URI.create("forward:/fallback")))
                 .build();
     }
+
 }
