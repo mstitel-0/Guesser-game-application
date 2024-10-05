@@ -2,3 +2,6 @@
 project/authentication-service/src/main/resources/application-dev.yml
 project/mail-service/src/main/resources/application-dev.yml
 project/.idea/dataSources.xml
+project/api-gateway/src/main/resources/application-dev.yml
+project/authentication-service/src/main/resources/application-local.yml
+project/mail-service/src/main/resources/application-local.yml
