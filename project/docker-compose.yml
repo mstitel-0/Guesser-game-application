@@ -56,6 +56,17 @@ services:
     networks:
       - "my-app-network"
 
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./api-gateway/Dockerfile
+    ports:
+      - "8085:8085"
+    depends_on:
+      - auth-service
+    networks:
+      - "my-app-network"
+
 networks:
   my-app-network:
     driver: bridge

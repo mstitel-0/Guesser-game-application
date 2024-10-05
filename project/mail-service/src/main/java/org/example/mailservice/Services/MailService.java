@@ -15,7 +15,7 @@ public class MailService {
     @Value("${spring.mail.username}")
     private String senderMail;
 
-    private final String CONFIRMATION_LINK = "http://localhost:8080/api/authentication/confirm?token=";
+    private final String CONFIRMATION_LINK = "http://localhost:8085/auth/confirm?token=";
 
     private final JavaMailSender mailSender;
 
