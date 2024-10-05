@@ -24,8 +24,8 @@ public class JwtUtilTest {
     }
 
     @Test
-    void testGenerateToken() {
-        String token = jwtUtil.generateToken(EMAIL);
+    void testGenerateAccessToken() {
+        String token = jwtUtil.generateAccessToken(EMAIL);
 
         assertNotNull(token);
     }

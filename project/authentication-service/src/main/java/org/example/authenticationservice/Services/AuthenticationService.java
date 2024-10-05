@@ -1,6 +1,7 @@
 package org.example.authenticationservice.Services;
 
 import org.example.DTOs.MailConfirmationRequest;
+import org.example.authenticationservice.DTOs.JwtResponse;
 import org.example.authenticationservice.DTOs.LoginRequest;
 import org.example.authenticationservice.DTOs.RegistrationRequest;
 import org.example.authenticationservice.Exceptions.UserNotActivatedException;
@@ -28,7 +29,7 @@ public class AuthenticationService {
     }
 
     public void register(RegistrationRequest registrationRequest) {
-        if(userRepository.findByEmail(registrationRequest.email()).isPresent()) {
+        if (userRepository.findByEmail(registrationRequest.email()).isPresent()) {
             throw new BadCredentialsException("This email is already in use");
         }
         User user = new User();
@@ -51,16 +52,21 @@ public class AuthenticationService {
         userRepository.save(user);
     }
 
-    public String login(LoginRequest loginRequest) {
+    public JwtResponse login(LoginRequest loginRequest) {
         User user = userRepository.findByEmail(loginRequest.email())
                 .orElseThrow(() -> new UsernameNotFoundException(loginRequest.email()));
-        if(!user.isActivated()) {
+        if (!user.isActivated()) {
             throw new UserNotActivatedException("Confirm your email first!");
         }
         if (!bCryptPasswordEncoder.matches(loginRequest.password(), user.getPassword())) {
             throw new BadCredentialsException("Incorrect password");
         }
-        return jwtUtil.generateToken(loginRequest.email());
+        return new JwtResponse(jwtUtil.generateAccessToken(loginRequest.email()),
+                jwtUtil.generateRefreshToken(loginRequest.email()));
+    }
+
+    public String refresh(String refreshToken) {
+        return jwtUtil.refreshAccessToken(refreshToken);
     }
 
 }
