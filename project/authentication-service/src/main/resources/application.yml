@@ -3,5 +3,9 @@ spring:
     active: dev
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.kafka: DEBUG
