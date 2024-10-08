@@ -1,5 +1,5 @@
 services:
-  postgres:
+  user_database:
     image: postgres:12-alpine
     environment:
       POSTGRES_USER: admin
@@ -7,6 +7,16 @@ services:
       POSTGRES_DB: user_db
     ports:
       - "32768:5432"
+    networks:
+      - "my-app-network"
+  mail_database:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: mail_db
+    ports:
+      - "32769:5432"
     networks:
       - "my-app-network"
 
@@ -41,7 +51,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
+      - user_database
     networks:
       - "my-app-network"
 
@@ -52,7 +62,7 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      - postgres
+      - mail_database
     networks:
       - "my-app-network"
 

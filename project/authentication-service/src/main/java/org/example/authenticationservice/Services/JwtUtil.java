@@ -67,18 +67,14 @@ public class JwtUtil {
                 .getPayload();
     }
 
-    public Boolean isTokenExpired(String token) {
-        return getAllClaims(token).getExpiration().before(new Date());
-    }
-
     public String refreshAccessToken(String refreshToken) {
-        Claims claims = getAllClaims(refreshToken);
-        try{
-            isTokenExpired(refreshToken);
+        try {
+            Claims claims = getAllClaims(refreshToken);
+
             return generateAccessToken(claims.getSubject());
+
         } catch (ExpiredJwtException e) {
-            System.out.println("expired");
+            throw new JwtException("Expired refresh token");
         }
-        return null;
     }
 }

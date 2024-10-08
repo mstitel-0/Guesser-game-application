@@ -13,9 +13,9 @@ public class JwtUtilTest {
     @InjectMocks
     private JwtUtil jwtUtil;
 
-    private String TEST_JWT_SECRET = "12345678901234567890123456789012";
+    private static final String TEST_JWT_SECRET = "12345678901234567890123456789012";
 
-    private final String EMAIL = "example@gmail.com";
+    private static final String EMAIL = "example@gmail.com";
 
     @BeforeEach
     void setUp(){

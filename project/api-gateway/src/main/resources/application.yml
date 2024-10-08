@@ -1,5 +1,9 @@
 spring:
   profiles:
     active: dev
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
 server:
   port: 8085

@@ -2,6 +2,7 @@ package org.example.authenticationservice.Controllers;
 
 
 
+import org.example.authenticationservice.DTOs.ErrorResponseBody;
 import org.example.authenticationservice.Exceptions.UserNotActivatedException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
@@ -31,23 +32,27 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<String> handleUsernameNotFoundException(UsernameNotFoundException ex) {
-        return new ResponseEntity<>("User not found with given email: " + ex.getMessage(), HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorResponseBody> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        return new ResponseEntity<>(new ErrorResponseBody(404, ex.getMessage()),
+                HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<String> handleBadCredentialsException(BadCredentialsException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<ErrorResponseBody> handleBadCredentialsException(BadCredentialsException ex) {
+        return new ResponseEntity<>(new ErrorResponseBody(401, ex.getMessage()),
+                HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(JwtException.class)
-    public ResponseEntity<String> handleJWTVerificationException(JwtException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+    public ResponseEntity<ErrorResponseBody> handleJWTVerificationException(JwtException ex) {
+        return new ResponseEntity<>(new ErrorResponseBody(403, ex.getMessage()),
+                HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(UserNotActivatedException.class)
-    public ResponseEntity<String> handleUserNotActivatedException(UserNotActivatedException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+    public ResponseEntity<ErrorResponseBody> handleUserNotActivatedException(UserNotActivatedException ex) {
+        return new ResponseEntity<>(new ErrorResponseBody(403, ex.getMessage()),
+                HttpStatus.FORBIDDEN);
     }
 
 }

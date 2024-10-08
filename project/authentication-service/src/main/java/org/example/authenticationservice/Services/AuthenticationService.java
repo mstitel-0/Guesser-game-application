@@ -1,7 +1,9 @@
 package org.example.authenticationservice.Services;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.example.DTOs.MailConfirmationRequest;
-import org.example.authenticationservice.DTOs.JwtResponse;
 import org.example.authenticationservice.DTOs.LoginRequest;
 import org.example.authenticationservice.DTOs.RegistrationRequest;
 import org.example.authenticationservice.Exceptions.UserNotActivatedException;
@@ -14,12 +16,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+
 @Service
 public class AuthenticationService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtUtil jwtUtil;
     private final KafkaTemplate<String, MailConfirmationRequest> kafkaTemplate;
+
+    private static final String REFRESH_TOKEN_COOKIE_HEADER = "refreshToken";
+    private static final String MAIL_SERVICE_KAFKA_TOPIC = "mail-confirmation";
+    private static final int COOKIE_AGE = 43200;
 
     public AuthenticationService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtil jwtUtil, KafkaTemplate<String, MailConfirmationRequest> kafkaTemplate) {
         this.userRepository = userRepository;
@@ -29,18 +37,20 @@ public class AuthenticationService {
     }
 
     public void register(RegistrationRequest registrationRequest) {
-        if (userRepository.findByEmail(registrationRequest.email()).isPresent()) {
+        if (userExists(registrationRequest.email())) {
             throw new BadCredentialsException("This email is already in use");
         }
-        User user = new User();
-        user.setEmail(registrationRequest.email());
-        user.setPassword(bCryptPasswordEncoder.encode(registrationRequest.password()));
-        user.setActivated(false);
+        User user = new User(
+                registrationRequest.email(),
+                bCryptPasswordEncoder.encode(registrationRequest.password()),
+                false
+        );
         userRepository.save(user);
+
         MailConfirmationRequest request = new MailConfirmationRequest(registrationRequest.email(),
                 jwtUtil.generateEmailConfirmationToken(registrationRequest.email()));
 
-        kafkaTemplate.send("mail-confirmation", request);
+        kafkaTemplate.send(MAIL_SERVICE_KAFKA_TOPIC, request);
     }
 
     @Transactional
@@ -48,25 +58,55 @@ public class AuthenticationService {
         String email = jwtUtil.verifyEmailConfirmationToken(token);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email));
-        user.setActivated(true);
-        userRepository.save(user);
+        User activatedUser = new User(
+                user.getEmail(),
+                user.getPassword(),
+                true
+        );
+
+        userRepository.save(activatedUser);
     }
 
-    public JwtResponse login(LoginRequest loginRequest) {
+    public String login(LoginRequest loginRequest, HttpServletResponse httpServletResponse) {
         User user = userRepository.findByEmail(loginRequest.email())
-                .orElseThrow(() -> new UsernameNotFoundException(loginRequest.email()));
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found with given email: " + loginRequest.email()));
         if (!user.isActivated()) {
             throw new UserNotActivatedException("Confirm your email first!");
         }
         if (!bCryptPasswordEncoder.matches(loginRequest.password(), user.getPassword())) {
             throw new BadCredentialsException("Incorrect password");
         }
-        return new JwtResponse(jwtUtil.generateAccessToken(loginRequest.email()),
-                jwtUtil.generateRefreshToken(loginRequest.email()));
+        String accessToken = jwtUtil.generateAccessToken(loginRequest.email());
+        String refreshToken = jwtUtil.generateRefreshToken(loginRequest.email());
+
+
+        Cookie refreshCookie = new Cookie(REFRESH_TOKEN_COOKIE_HEADER, refreshToken);
+        refreshCookie.setPath("/api/authentication");
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setMaxAge(COOKIE_AGE);
+
+        httpServletResponse.addCookie(refreshCookie);
+
+        return accessToken;
     }
 
-    public String refresh(String refreshToken) {
+    public String refresh(HttpServletRequest httpServletRequest) {
+        Cookie[] cookies = httpServletRequest.getCookies();
+        if (cookies == null) {
+            throw new BadCredentialsException("Invalid cookies");
+        }
+        String refreshToken = Arrays
+                .stream(cookies)
+                .filter(cookie -> cookie.getName().equals(REFRESH_TOKEN_COOKIE_HEADER))
+                .findFirst().orElseThrow(() -> new BadCredentialsException("Refresh token is missing."))
+                .getValue();
+
         return jwtUtil.refreshAccessToken(refreshToken);
+    }
+
+    public Boolean userExists(String email) {
+        return userRepository.findByEmail(email).isPresent();
     }
 
 }

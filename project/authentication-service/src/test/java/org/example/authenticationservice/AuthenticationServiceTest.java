@@ -11,6 +11,7 @@ import org.example.authenticationservice.Services.AuthenticationService;
 import org.example.authenticationservice.Services.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -33,14 +34,15 @@ public class AuthenticationServiceTest {
     @Mock
     private KafkaTemplate<String, MailConfirmationRequest> kafkaTemplate;
 
-    private final String EMAIL = "test@gmail.com";
-    private final String RAW_PASSWORD = "password";
-    private final String ENCODED_PASSWORD = "encoded_pass";
-    private final String JWT_TOKEN = "token";
-    private final String MAIL_CONFIRMATION_TOKEN = "mail-token";
-    private final String KAFKA_MAIL_CONFIRMATION_TOPIC = "mail-confirmation";
-    private final String EMAIL_IS_TAKEN_EXCEPTION_MESSAGE = "This email is already in use";
-    private final boolean NOT_ACTIVATED = false;
+    private static final String EMAIL = "test@gmail.com";
+    private static final String RAW_PASSWORD = "password";
+    private static final String ENCODED_PASSWORD = "encoded_pass";
+    private static final String JWT_TOKEN = "token";
+    private static final String MAIL_CONFIRMATION_TOKEN = "mail-token";
+    private static final String KAFKA_MAIL_CONFIRMATION_TOPIC = "mail-confirmation";
+    private static final String EMAIL_IS_TAKEN_EXCEPTION_MESSAGE = "This email is already in use";
+    private static final boolean NOT_ACTIVATED = false;
+    private static final boolean ACTIVATED = true;
 
 
     @BeforeEach
@@ -89,18 +91,24 @@ public class AuthenticationServiceTest {
     @Test
     void activatePassesSuccessfully() {
         User user = new User(EMAIL, ENCODED_PASSWORD, NOT_ACTIVATED);
+        User expectedUser = new User(EMAIL, ENCODED_PASSWORD, ACTIVATED);
 
         when(jwtUtil.verifyEmailConfirmationToken(JWT_TOKEN)).thenReturn(EMAIL);
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
-        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userRepository.save(any(User.class))).thenReturn(expectedUser);
 
         authenticationService.activate(JWT_TOKEN);
 
-        assertTrue(user.isActivated());
-
         verify(jwtUtil).verifyEmailConfirmationToken(JWT_TOKEN);
         verify(userRepository).findByEmail(EMAIL);
-        verify(userRepository).save(user);
+
+        ArgumentCaptor<User> capturedUser = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(capturedUser.capture());
+        User savedUser = capturedUser.getValue();
+
+        assertTrue(savedUser.isActivated());
+        assertEquals(EMAIL, savedUser.getEmail());
+        assertEquals(ENCODED_PASSWORD, savedUser.getPassword());
 
         verifyNoMoreInteractions(userRepository, jwtUtil, kafkaTemplate, bCryptPasswordEncoder);
     }

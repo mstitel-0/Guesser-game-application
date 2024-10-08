@@ -1,7 +1,11 @@
 spring:
   profiles:
-    active: dev
+    active: local
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.kafka: DEBUG

@@ -1,6 +1,5 @@
-package org.example.apigateway;
+package org.example.apigateway.Configurations;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.function.RouterFunction;
@@ -20,7 +19,7 @@ public class ApiGatewayRouting {
     @Bean
     public RouterFunction<ServerResponse> authenticationRoute() {
         return route()
-                .route(path("/auth/**"), http("http://auth-service:8080"))
+                .route(path("/auth/**"), http("http://localhost:8080"))
                 .filter(rewritePath("/auth/(?<segment>.*)", "/api/authentication/${segment}"))
                 .filter(circuitBreaker("authenticationServiceCircuitBreaker", URI.create("forward:/fallback")))
                 .build();

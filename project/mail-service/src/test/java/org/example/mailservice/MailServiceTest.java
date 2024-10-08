@@ -26,8 +26,8 @@ public class MailServiceTest {
     private ConfirmationRepository confirmationRepository;
 
 
-    private final String EMAIL = "test@gmail.com";
-    private final String CONFIRMATION_TOKEN = "toke";
+    private static final String EMAIL = "test@gmail.com";
+    private static final String CONFIRMATION_TOKEN = "token";
 
     @BeforeEach
     void setUp() {

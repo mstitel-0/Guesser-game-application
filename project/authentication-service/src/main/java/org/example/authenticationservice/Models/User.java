@@ -1,15 +1,13 @@
 package org.example.authenticationservice.Models;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Null;
 
 @Entity
 @Table(name = "\"user\"")
-public class User {
+public final class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     private String email;
 
@@ -28,7 +26,7 @@ public class User {
     }
 
     public Long getId() {
-        return Id;
+        return id;
     }
 
     public String getEmail() {
@@ -43,19 +41,4 @@ public class User {
         return isActivated;
     }
 
-    public void setId(Long id) {
-        Id = id;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setActivated(boolean activated) {
-        isActivated = activated;
-    }
 }
