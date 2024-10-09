@@ -32,7 +32,7 @@ public class MailServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        ReflectionTestUtils.setField(mailService, "senderMail", "sender@gmail.com");
+        ReflectionTestUtils.setField(mailService, "SENDER_MAIL", "sender@gmail.com");
     }
 
     @Test

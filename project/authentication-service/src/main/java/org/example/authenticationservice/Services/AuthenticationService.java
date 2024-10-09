@@ -37,9 +37,20 @@ public class AuthenticationService {
     }
 
     public void register(RegistrationRequest registrationRequest) {
-        if (userExists(registrationRequest.email())) {
-            throw new BadCredentialsException("This email is already in use");
+        userRepository.findByEmail(registrationRequest.email())
+                .ifPresentOrElse(
+                        user -> handleRegisteringExistingUser(user),
+                        () -> handleRegisteringNewUser(registrationRequest)
+                );
+    }
+    public void handleRegisteringExistingUser(User user) {
+        if (!user.isActivated()) {
+            throw new UserNotActivatedException("User already exists. Confirm your email");
         }
+        throw new BadCredentialsException("User already exists. Log in");
+    }
+
+    public void handleRegisteringNewUser(RegistrationRequest registrationRequest) {
         User user = new User(
                 registrationRequest.email(),
                 bCryptPasswordEncoder.encode(registrationRequest.password()),
@@ -47,8 +58,11 @@ public class AuthenticationService {
         );
         userRepository.save(user);
 
-        MailConfirmationRequest request = new MailConfirmationRequest(registrationRequest.email(),
-                jwtUtil.generateEmailConfirmationToken(registrationRequest.email()));
+        sendConfirmationEmail(registrationRequest.email());
+    }
+    public void sendConfirmationEmail(String email){
+        MailConfirmationRequest request = new MailConfirmationRequest(email,
+                jwtUtil.generateEmailConfirmationToken(email));
 
         kafkaTemplate.send(MAIL_SERVICE_KAFKA_TOPIC, request);
     }
@@ -59,6 +73,7 @@ public class AuthenticationService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email));
         User activatedUser = new User(
+                user.getId(),
                 user.getEmail(),
                 user.getPassword(),
                 true
@@ -104,9 +119,4 @@ public class AuthenticationService {
 
         return jwtUtil.refreshAccessToken(refreshToken);
     }
-
-    public Boolean userExists(String email) {
-        return userRepository.findByEmail(email).isPresent();
-    }
-
 }

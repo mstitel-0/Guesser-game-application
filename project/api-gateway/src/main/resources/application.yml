@@ -1,9 +1,11 @@
 spring:
   profiles:
     active: dev
-logging:
-  level:
-    org.springframework.web: DEBUG
-    org.springframework.security: DEBUG
+
+application:
+  services:
+    authentication:
+      baseUrl: ${AUTH_SERVICE_HOST:http://localhost}:${AUTH_SERVICE_PORT:8080}
+
 server:
-  port: 8085
+  port: ${SERVER_PORT:8085}

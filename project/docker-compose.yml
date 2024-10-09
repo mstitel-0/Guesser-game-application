@@ -1,5 +1,5 @@
 services:
-  user_database:
+  user-database:
     image: postgres:12-alpine
     environment:
       POSTGRES_USER: admin
@@ -9,7 +9,8 @@ services:
       - "32768:5432"
     networks:
       - "my-app-network"
-  mail_database:
+
+  mail-database:
     image: postgres:12-alpine
     environment:
       POSTGRES_USER: admin
@@ -50,8 +51,17 @@ services:
       dockerfile: ./authentication-service/Dockerfile
     ports:
       - "8080:8080"
+    environment:
+      - DB_HOST=user-database
+      - DB_PORT=5432
+      - DB_NAME=user_db
+      - DB_USERNAME=admin
+      - DB_PASSWORD=admin
+      - KAFKA_HOST=kafka
+      - KAFKA_PORT=9092
+      - SERVER_PORT:8080
     depends_on:
-      - user_database
+      - user-database
     networks:
       - "my-app-network"
 
@@ -61,8 +71,19 @@ services:
       dockerfile: ./mail-service/Dockerfile
     ports:
       - "8081:8081"
+    environment:
+      - DB_HOST=mail-database
+      - DB_PORT=5432
+      - DB_NAME=mail_db
+      - DB_USERNAME=admin
+      - DB_PASSWORD=admin
+      - KAFKA_HOST=kafka
+      - KAFKA_PORT=9092
+      - AUTH_SERVICE_HOST=http://auth-service
+      - AUTH_SERVICE_PORT=8080
+      - SERVER_PORT:8081
     depends_on:
-      - mail_database
+      - mail-database
     networks:
       - "my-app-network"
 
@@ -72,6 +93,10 @@ services:
       dockerfile: ./api-gateway/Dockerfile
     ports:
       - "8085:8085"
+    environment:
+      - AUTH_SERVICE_HOST=http://auth-service
+      - AUTH_SERVICE_PORT=8080
+      - SERVER_PORT:8085
     depends_on:
       - auth-service
     networks:

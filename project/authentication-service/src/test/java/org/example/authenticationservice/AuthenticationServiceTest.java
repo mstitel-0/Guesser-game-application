@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import org.example.DTOs.MailConfirmationRequest;
 import org.example.authenticationservice.DTOs.RegistrationRequest;
+import org.example.authenticationservice.Exceptions.UserNotActivatedException;
 import org.example.authenticationservice.Models.User;
 import org.example.authenticationservice.Repositories.UserRepository;
 import org.example.authenticationservice.Services.AuthenticationService;
@@ -41,6 +42,7 @@ public class AuthenticationServiceTest {
     private static final String MAIL_CONFIRMATION_TOKEN = "mail-token";
     private static final String KAFKA_MAIL_CONFIRMATION_TOPIC = "mail-confirmation";
     private static final String EMAIL_IS_TAKEN_EXCEPTION_MESSAGE = "This email is already in use";
+    private static final String USER_EXISTS_CONFIRM_EMAIL_MESSAGE = "User already exists. Confirm your email";
     private static final boolean NOT_ACTIVATED = false;
     private static final boolean ACTIVATED = true;
 
@@ -79,9 +81,9 @@ public class AuthenticationServiceTest {
 
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
 
-        Exception exception = assertThrows(BadCredentialsException.class, () ->
+        Exception exception = assertThrows(UserNotActivatedException.class, () ->
                 authenticationService.register(registrationRequest));
-        assertEquals(exception.getMessage(), EMAIL_IS_TAKEN_EXCEPTION_MESSAGE);
+        assertEquals(exception.getMessage(), USER_EXISTS_CONFIRM_EMAIL_MESSAGE);
 
         verify(userRepository).findByEmail(EMAIL);
 

@@ -19,11 +19,19 @@ public final class User {
     public User() {
     }
 
+    public User(Long id, String email, String password, boolean isActivated) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.isActivated = isActivated;
+    }
+
     public User(String email, String password, boolean isActivated) {
         this.email = email;
         this.password = password;
         this.isActivated = isActivated;
     }
+
 
     public Long getId() {
         return id;

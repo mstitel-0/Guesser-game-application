@@ -13,9 +13,12 @@ import java.time.LocalDateTime;
 public class MailService {
 
     @Value("${spring.mail.username}")
-    private String senderMail;
+    private String SENDER_MAIL;
 
-    private final String CONFIRMATION_LINK = "http://localhost:8085/auth/confirm?token=";
+    @Value("${application.services.authentication.baseUrl}")
+    private String AUTH_SERVICE_HOST;
+
+    private static final String AUTH_SERVICE_CONFIRMATION_PATH = "/auth/confirm?token=";
 
     private final JavaMailSender mailSender;
 
@@ -31,10 +34,11 @@ public class MailService {
         confirmationRepository.save(confirmation);
 
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(senderMail);
+        message.setFrom(SENDER_MAIL);
         message.setTo(email);
         message.setSubject("Mail confirmation");
-        message.setText("Please, follow this link to confirm your account.\n" + CONFIRMATION_LINK + confirmationToken);
+        message.setText("Please, follow this link to confirm your account.\n"
+                + AUTH_SERVICE_HOST + AUTH_SERVICE_CONFIRMATION_PATH + confirmationToken);
         mailSender.send(message);
     }
 }

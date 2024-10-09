@@ -12,32 +12,32 @@ import java.util.Properties;
 public class MailSenderConfiguration {
 
     @Value("${spring.mail.host}")
-    private String host;
+    private String HOST;
     @Value("${spring.mail.port}")
-    private int port;
+    private int PORT;
     @Value("${spring.mail.username}")
-    private String username;
+    private String USERNAME;
     @Value("${spring.mail.password}")
-    private String password;
+    private String PASSWORD;
     @Value("${spring.mail.default-encoding}")
-    private String encoding;
+    private String ENCODING;
     @Value("${spring.mail.properties.mail.smtp.auth}")
-    private boolean authentication;
+    private boolean AUTHENTICATION;
     @Value("${spring.mail.properties.mail.smtp.starttls.enable}")
-    private boolean starttls;
+    private boolean STARTTLS_ENABLE;
 
     @Bean
     public JavaMailSender getJavaMailSender() {
        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-       mailSender.setHost(host);
-       mailSender.setPort(port);
-       mailSender.setDefaultEncoding(encoding);
-       mailSender.setUsername(username);
-       mailSender.setPassword(password);
+       mailSender.setHost(HOST);
+       mailSender.setPort(PORT);
+       mailSender.setDefaultEncoding(ENCODING);
+       mailSender.setUsername(USERNAME);
+       mailSender.setPassword(PASSWORD);
 
        Properties properties = mailSender.getJavaMailProperties();
-       properties.put("mail.smtp.auth", authentication);
-       properties.put("mail.smtp.starttls.enable", starttls);
+       properties.put("mail.smtp.auth", AUTHENTICATION);
+       properties.put("mail.smtp.starttls.enable", STARTTLS_ENABLE);
        return mailSender;
     }
 }
