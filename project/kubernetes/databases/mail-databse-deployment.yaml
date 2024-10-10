@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mail-database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mail-database
+  template:
+    metadata:
+      labels:
+        app: mail-database
+    spec:
+      containers:
+        - name: mail-database
+          image: postgres:12-alpine
+          env:
+            - name: POSTGRES_DB
+              value: mail_db
+            - name: POSTGRES_USER
+              value: admin
+            - name: POSTGRES_PASSWORD
+              value:  admin
+          ports:
+            - containerPort: 5432
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mail-database
+spec:
+  selector:
+    app: mail-database
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

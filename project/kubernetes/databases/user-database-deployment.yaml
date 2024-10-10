@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-database
+  template:
+    metadata:
+      labels:
+        app: user-database
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:12-alpine
+          env:
+            - name: POSTGRES_DB
+              value: user_db
+            - name: POSTGRES_USER
+              value: admin
+            - name: POSTGRES_PASSWORD
+              value:  admin
+          ports:
+            - containerPort: 5432
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-database
+spec:
+  selector:
+    app: user-database
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

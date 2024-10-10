@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mail-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mail-service
+  template:
+    metadata:
+      labels:
+        app: mail-service
+    spec:
+      containers:
+        - name: mail-service
+          image: mstitel0/mail-service:latest
+          ports:
+            - containerPort: 8081
+          env:
+            - name: DB_HOST
+              value: mail-database
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: mail_db
+            - name: DB_USERNAME
+              value: admin
+            - name: DB_PASSWORD
+              value: admin
+            - name: KAFKA_HOST
+              value: my-kafka
+            - name: KAFKA_PORT
+              value: "9092"
+            - name: AUTH_SERVICE_HOST
+              value: "http://auth-service"
+            - name: AUTH_SERVICE_PORT
+              value: "8080"
+            - name: SERVER_PORT
+              value: "8081"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mail-service
+spec:
+  selector:
+    app: mail-service
+  ports:
+    - protocol: TCP
+      port: 8081
+  type: ClusterIP
