@@ -14,6 +14,7 @@
         <module>authentication-service</module>
         <module>shared-dto</module>
         <module>api-gateway</module>
+        <module>game-service</module>
     </modules>
 
     <properties>

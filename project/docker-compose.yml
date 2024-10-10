@@ -1,4 +1,5 @@
 services:
+
   user-database:
     image: postgres:12-alpine
     environment:
