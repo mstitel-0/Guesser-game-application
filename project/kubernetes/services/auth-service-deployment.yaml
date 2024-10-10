@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: auth-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: auth-service
@@ -17,6 +17,24 @@ spec:
           image: mstitel0/auth-service:latest
           ports:
             - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: user-database
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: user_db
+            - name: DB_USERNAME
+              value: admin
+            - name: DB_PASSWORD
+              value: admin
+            - name: KAFKA_HOST
+              value: my-kafka
+            - name: KAFKA_PORT
+              value: "9092"
+            - name: SERVER_PORT
+              value: "8080"
+
 
 ---
 apiVersion: v1

@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres
+  name: user-database
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: postgres
+      app: user-database
   template:
     metadata:
       labels:
-        app: postgres
+        app: user-database
     spec:
       containers:
         - name: postgres
@@ -29,11 +29,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: user-database
 spec:
+  selector:
+    app: user-database
   type: ClusterIP
   ports:
-    - port: 5432
+    - protocol: TCP
+      port: 5432
       targetPort: 5432
-  selector:
-    app: postgres
