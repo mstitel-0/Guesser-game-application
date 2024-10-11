@@ -9,6 +9,7 @@ public class Hint {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "game_id")
     private Game game;
 
     private String hint;

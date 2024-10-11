@@ -1,6 +1,6 @@
 package org.example.gameeservice.Exceptions;
 
-import org.example.gameeservice.Models.GameStatus;
+import org.example.gameeservice.Enums.GameStatus;
 
 public class GameEndedException extends RuntimeException {
     public GameEndedException(GameStatus gameStatus) {

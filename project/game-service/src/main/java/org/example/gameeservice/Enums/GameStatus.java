@@ -1,4 +1,4 @@
-package org.example.gameeservice.Models;
+package org.example.gameeservice.Enums;
 
 public enum GameStatus {
     IN_PROGRESS, LOST, WON

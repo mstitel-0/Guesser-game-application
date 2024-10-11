@@ -2,9 +2,11 @@ package org.example.gameeservice.Services;
 
 import org.example.gameeservice.DTOs.GameResponse;
 import org.example.gameeservice.Exceptions.GameEndedException;
+import org.example.gameeservice.Exceptions.InvalidTopicException;
 import org.example.gameeservice.Models.Game;
-import org.example.gameeservice.Models.GameStatus;
-import org.example.gameeservice.Models.GameTopic;
+import org.example.gameeservice.Enums.GameStatus;
+import org.example.gameeservice.Enums.GameTopic;
+import org.example.gameeservice.Models.GameSession;
 import org.example.gameeservice.Models.Hint;
 import org.example.gameeservice.Repositories.GameRepository;
 import org.example.gameeservice.Repositories.HintRepository;
@@ -34,12 +36,12 @@ public class GameService {
             case "animal" -> GameTopic.ANIMALS;
             case "food" -> GameTopic.FOOD;
             case "cars" -> GameTopic.CARS;
-            default -> throw new RuntimeException("Invalid topic");
+            default -> throw new InvalidTopicException();
         };
 
         //response from chatgpt
-
-        Game game = new Game("chatgtp answer", actualTopic);
+        GameSession gameSession = new GameSession();
+        Game game = new Game("chatgtp riddle", gameSession,"chatgpt asnwer" , actualTopic);
 
         gameRepository.save(game);
 
@@ -85,7 +87,7 @@ public class GameService {
         return gameStatus == GameStatus.IN_PROGRESS;
     }
 
-    public Boolean isGuessCorrect(String riddle, String guess) {
+    public Boolean isGuessCorrect(String answer, String guess) {
         return true;
     }
 
@@ -104,7 +106,7 @@ public class GameService {
             hintRepository.save(newHint);
             hintText = newHint.getHint();
         }
-        
+
         return hintText;
     }
 

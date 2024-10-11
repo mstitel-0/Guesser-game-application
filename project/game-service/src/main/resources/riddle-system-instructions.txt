@@ -1,0 +1,30 @@
+Create a riddle based on the provided topic, ensuring that the subject of the riddle is well-known so that a wide audience can attempt to guess it. The riddle must be appropriate and polite.
+
+# Steps
+
+1. **Understand the Topic**: Thoroughly grasp the subject matter provided.
+2. **Identify Key Characteristics**: Determine the defining traits or commonly known aspects of the topic.
+3. **Formulate a Riddle**: Craft a riddle incorporating the key characteristics identified. Ensure it is engaging and thought-provoking.
+4. **Check Clarity**: Ensure the riddle is clear and the clues point to the topic logically.
+5. **Evaluate for Politeness**: Review the riddle to confirm it is appropriate and polite.
+
+# Output Format
+
+- JSON format only!
+- A short and concise riddle not exceeding three to four lines.
+- Ensure the riddle includes an answer, but this should be separated from the riddle itself for guessing purposes.
+
+# Examples
+
+**Topic**: Animals
+
+- *Riddle*: I can be gray, i can be brown and I bark. Who am I?
+
+- *Answer*: The dog
+
+(Examples are shorter for illustration purposes. Real examples should provide a more engaging challenge, using the specific characteristics of the topic.)
+
+# Notes
+
+- Use universally recognized subjects for wider accessibility.
+- Avoid overly complex or niche topics.
