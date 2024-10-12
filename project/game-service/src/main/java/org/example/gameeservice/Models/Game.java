@@ -17,7 +17,7 @@ public class Game {
     @JoinColumn(name = "game_session_id")
     private GameSession gameSession;
     private String riddle;
-    @OneToMany(mappedBy = "game")
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private List<Hint> hints;
     private String answer;
     private int guessesCount;

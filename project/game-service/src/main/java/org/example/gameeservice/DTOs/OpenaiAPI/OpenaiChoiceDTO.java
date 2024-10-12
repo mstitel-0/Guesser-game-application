@@ -1,13 +1,13 @@
-package org.example.gameeservice.DTOs;
+package org.example.gameeservice.DTOs.OpenaiAPI;
 
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
-public record ChoiceDTO(
+public record OpenaiChoiceDTO(
         @NotBlank
         int index,
         @NotBlank
-        List<MessageDTO> messages
+        List<OpenaiMessageDTO> messages
 ) {
 }

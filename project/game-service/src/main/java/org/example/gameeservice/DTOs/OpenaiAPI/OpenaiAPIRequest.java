@@ -1,13 +1,13 @@
-package org.example.gameeservice.DTOs;
+package org.example.gameeservice.DTOs.OpenaiAPI;
 
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
-public record RiddleGenerationRequest(
+public record OpenaiAPIRequest(
         @NotBlank
         String model,
         @NotBlank
-        List<MessageDTO> messages
+        List<OpenaiMessageDTO> messages
 ) {
 }

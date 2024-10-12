@@ -1,55 +1,61 @@
 package org.example.gameeservice.Services;
 
+import org.example.gameeservice.DTOs.GameMessageDTO;
 import org.example.gameeservice.DTOs.GameResponse;
+import org.example.gameeservice.DTOs.RiddleDTO;
 import org.example.gameeservice.Exceptions.GameEndedException;
-import org.example.gameeservice.Exceptions.InvalidTopicException;
 import org.example.gameeservice.Models.Game;
 import org.example.gameeservice.Enums.GameStatus;
 import org.example.gameeservice.Enums.GameTopic;
 import org.example.gameeservice.Models.GameSession;
 import org.example.gameeservice.Models.Hint;
 import org.example.gameeservice.Repositories.GameRepository;
-import org.example.gameeservice.Repositories.HintRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
 @Service
 public class GameService {
 
-    private final HintRepository hintRepository;
+    private static final String SYSTEM_ROLE = "system";
+
+    private static final String USER_ROLE = "user";
 
     private final GameRepository gameRepository;
 
+    private final RiddleService riddleService;
+
+    private final GameMessageService gameMessageService;
+
     private static int MAX_GUESS_COUNT = 9;
 
-    public GameService(HintRepository hintRepository, GameRepository gameRepository) {
-        this.hintRepository = hintRepository;
+    public GameService(GameRepository gameRepository, RiddleService riddleService, GameMessageService gameMessageService) {
         this.gameRepository = gameRepository;
+        this.riddleService = riddleService;
+        this.gameMessageService = gameMessageService;
     }
 
-    public String startNewGame(String topic) {
+    @Transactional
+    public String startNewGame(Long userId, String topic) {
+        GameSession gameSession = new GameSession(userId);
 
-        GameTopic actualTopic = switch (topic) {
-            case "animal" -> GameTopic.ANIMALS;
-            case "food" -> GameTopic.FOOD;
-            case "cars" -> GameTopic.CARS;
-            default -> throw new InvalidTopicException();
-        };
+        GameTopic actualTopic = GameTopic.topicFromString(topic);
 
-        //response from chatgpt
-        GameSession gameSession = new GameSession();
-        Game game = new Game("chatgtp riddle", gameSession,"chatgpt asnwer" , actualTopic);
+        RiddleDTO riddleDTO = riddleService.getRiddle(actualTopic);
+
+        Game game = new Game(riddleDTO.riddle(),
+                gameSession,
+                riddleDTO.answer() ,
+                actualTopic
+        );
 
         gameRepository.save(game);
 
-        Hint hint = new Hint(game, "chatgpt hint");
-
-        hintRepository.save(hint);
-
-        return hint.getHint();
+        return game.getRiddle();
     }
 
     @Transactional
@@ -61,11 +67,16 @@ public class GameService {
             throw new GameEndedException(game.getGameStatus());
         }
 
+        GameSession gameSession = game.getGameSession();
+        List<GameMessageDTO> messages = new ArrayList<>();
+
+        messages.add(new GameMessageDTO(USER_ROLE, guess));
+
         String responseMessage = "Incorrect guess, try again";
 
         game.setGuessesCount(game.getGuessesCount() + 1);
 
-        if (isGuessCorrect(game.getRiddle(), guess)) {
+        if (isGuessCorrect(game.getAnswer(), guess)) {
             game.setGameStatus(GameStatus.WON);
             responseMessage = "You won, congratulations!";
 
@@ -76,11 +87,34 @@ public class GameService {
             responseMessage = "You lost!";
         }
 
+        messages.add(new GameMessageDTO(SYSTEM_ROLE, responseMessage));
+
         String hint = handleHint(game);
+
+        if (hint != null) {
+            messages.add(new GameMessageDTO(SYSTEM_ROLE, hint));
+        }
+
+        gameMessageService.processGameMessage(gameSession, messages );
 
         return new GameResponse(responseMessage,
                 Optional.ofNullable(hint),
                 game.getGameStatus());
+    }
+
+    public String handleHint(Game game) {
+        String hintText = null;
+
+        if (isHintRequired(game.getGuessesCount())) {
+            String hint = riddleService.getHint(game.getRiddle(), game.getHints());
+            Hint newHint = new Hint(game, hint);
+
+            game.addHint(newHint);
+            gameRepository.save(game);
+
+            hintText = newHint.getHint();
+        }
+        return hintText;
     }
 
     public Boolean isGameOngoing(GameStatus gameStatus) {
@@ -88,34 +122,15 @@ public class GameService {
     }
 
     public Boolean isGuessCorrect(String answer, String guess) {
-        return true;
+       return guess.equalsIgnoreCase(answer);
     }
 
     public Boolean isMaxGuessExceeded(int guessCount) {
         return guessCount == MAX_GUESS_COUNT;
     }
 
-    public String handleHint(Game game) {
-        String hintText = null;
-
-        if (isHintRequired(game.getGuessesCount())) {
-            Hint newHint = getHint(game.getRiddle());
-
-            game.addHint(newHint);
-            gameRepository.save(game);
-            hintRepository.save(newHint);
-            hintText = newHint.getHint();
-        }
-
-        return hintText;
-    }
-
     public Boolean isHintRequired(int guessCount) {
         return guessCount % 3 == 0;
     }
 
-    public Hint getHint(String riddle) {
-        //send request
-        return null;
-    }
 }

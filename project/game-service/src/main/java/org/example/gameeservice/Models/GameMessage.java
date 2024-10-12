@@ -12,6 +12,15 @@ public class GameMessage {
 
     private String message;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private GameSession gameSession;
+
+    protected GameMessage() {
+    }
+
+    public GameMessage(String role, String message, GameSession gameSession) {
+        this.role = role;
+        this.message = message;
+        this.gameSession = gameSession;
+    }
 }
