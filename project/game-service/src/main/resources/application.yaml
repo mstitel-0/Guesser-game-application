@@ -6,3 +6,8 @@ spring:
               org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration, 
               org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,
               org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
+openai:
+  api:
+    gpt:
+      model: gpt-4o-mini
+      max-completion-tokens: 150

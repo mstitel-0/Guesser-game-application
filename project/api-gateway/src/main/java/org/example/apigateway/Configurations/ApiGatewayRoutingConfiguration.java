@@ -23,8 +23,11 @@ import static org.springframework.cloud.gateway.server.mvc.predicate.GatewayRequ
 @Configuration
 public class ApiGatewayRoutingConfiguration {
 
-    @Value("${application.services.authentication.baseUrl}")
+    @Value("${application.services.authentication.base-url}")
     private String AUTH_SERVICE_BASE_URL;
+
+    @Value("${application.services.game.base-url}")
+    private String GAME_SERVICE_BASE_URL;
 
     @Bean
     public RouterFunction<ServerResponse> authenticationRoute() {
@@ -35,4 +38,12 @@ public class ApiGatewayRoutingConfiguration {
                 .build();
     }
 
+    @Bean
+    public RouterFunction<ServerResponse> gameRoute() {
+        return route()
+                .route(path("/game/**"), http(AUTH_SERVICE_BASE_URL))
+                .filter(rewritePath("/auth/(?<segment>.*)", "/api/game/${segment}"))
+                .filter(circuitBreaker("gameServiceCircuitBreaker", URI.create("forward:/fallback")))
+                .build();
+    }
 }

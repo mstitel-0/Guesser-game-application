@@ -1,138 +1,78 @@
 package org.example.gameeservice.Services;
 
-import jakarta.annotation.PostConstruct;
-import org.example.gameeservice.DTOs.OpenaiAPI.*;
+import static org.springframework.ai.openai.api.OpenAiApi.ChatCompletionRequest.*;
+import static org.springframework.ai.openai.api.OpenAiApi.ChatCompletionRequest.ResponseFormat.*;
+
 import org.example.gameeservice.DTOs.RiddleDTO;
 import org.example.gameeservice.Enums.GameTopic;
 import org.example.gameeservice.Models.Hint;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.converter.BeanOutputConverter;
+import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.ai.openai.OpenAiChatOptions;
+import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class RiddleService {
 
-    @Value("${gpt.model}")
-    private String MODEL;
+    private static String riddleTemplate;
 
-    private static String RIDDLE_GENERATION_SYSTEM_INSTRUCTIONS;
+    private static String hintTemplate;
 
-    private StringBuilder hintTemplate;
+    private final OpenAiApi openAiApi;
 
-    private static final String USER_ROLE = "user";
+    private final OpenAiChatOptions openAiChatOptions;
 
-    private static final String SYSTEM_ROLE = "system";
+    private final OpenAiChatModel openAiChatModel;
 
-    private final RestClient restClient;
+    public RiddleService(OpenAiApi openAiApi,
+                         OpenAiChatOptions openAiChatOptions,
+                         @Value("classpath:riddle-generation-system-instructions.txt") Resource riddleResource,
+                         @Value("classpath:hint-generation-system-instructions.txt") Resource hintResource) throws IOException {
+        this.openAiApi = openAiApi;
+        this.openAiChatOptions = openAiChatOptions;
+        this.openAiChatModel = new OpenAiChatModel(openAiApi, openAiChatOptions);
 
-    public RiddleService(RestClient restClient) {
-        this.restClient = restClient;
+        riddleTemplate = Files.readString(riddleResource.getFile().toPath());
+        hintTemplate = Files.readString(hintResource.getFile().toPath());
     }
 
-    @PostConstruct
-    public void postConstruct() throws IOException {
-        ClassPathResource riddleResource = new ClassPathResource("riddle-generation-system-instructions.txt");
-        RIDDLE_GENERATION_SYSTEM_INSTRUCTIONS = Files.readString(riddleResource.getFile().toPath());
+    private <T> T makeRequest(Class<T> responseDTO, String promptText) {
+        BeanOutputConverter<T> outputConverter = new BeanOutputConverter<>(responseDTO);
+        openAiChatOptions.setResponseFormat(new ResponseFormat(Type.JSON_SCHEMA, outputConverter.getJsonSchema()));
 
-        ClassPathResource hintResource = new ClassPathResource("hint-generation-system-instructions.txt");
-        hintTemplate = new StringBuilder(Files.readString(hintResource.getFile().toPath()));
-
+        ChatResponse response = openAiChatModel.call(new Prompt(promptText));
+        return outputConverter.convert(response.getResult().getOutput().getContent());
     }
 
     public RiddleDTO getRiddle(GameTopic gameTopic) {
-        OpenaiMessageDTO userMessage = new OpenaiMessageDTO(
-                USER_ROLE,
-                gameTopic.name()
-        );
-        OpenaiMessageDTO systemMessage = new OpenaiMessageDTO(
-                SYSTEM_ROLE,
-                RIDDLE_GENERATION_SYSTEM_INSTRUCTIONS
-        );
-
-        OpenaiAPIRequest request = new OpenaiAPIRequest(
-                MODEL,
-                Arrays.asList(userMessage, systemMessage)
-        );
-
-
-
-        RiddleRequest response = sendRiddleGenerationRequest(request);
-
-        return new RiddleDTO(
-                response.riddle(),
-                response.answer()
-        );
+        return makeRequest(RiddleDTO.class,  prepareRiddleText(gameTopic));
     }
 
     public String getHint(String riddle, List<Hint> hints) {
-       prepareHintText(riddle, hints);
-
-        OpenaiMessageDTO systemMessage = new OpenaiMessageDTO(
-                SYSTEM_ROLE,
-                hintTemplate.toString()
-        );
-
-        OpenaiAPIRequest request = new OpenaiAPIRequest(
-                MODEL,
-                Collections.singletonList(systemMessage)
-        );
-
-        HintGenerationResponse response = sendHintGenerationRequest(request);
-
-        return response.hint();
+        return makeRequest(String.class, prepareHintText(riddle, hints));
     }
 
-    public RiddleRequest sendRiddleGenerationRequest(OpenaiAPIRequest request) {
-        return restClient.post()
-                .body(request)
-                .retrieve()
-                .body(RiddleRequest.class);
+    public String prepareRiddleText(GameTopic gameTopic) {
+        return riddleTemplate
+                .replace("{topic}", gameTopic.name());
     }
 
-    public HintGenerationResponse sendHintGenerationRequest(OpenaiAPIRequest request) {
-        return restClient.post()
-                .body(request)
-                .retrieve()
-                .body(HintGenerationResponse.class);
-    }
-
-    public OpenaiMessageDTO extractMessage(RiddleGenerationResponse response) {
-        return response.choices().getFirst().messages().getFirst();
-    }
-
-//    public String extractRiddle(RiddleGenerationResponse response) {
-//        return extractMessage(response).content().split("\\.", 2)[0].trim();
-//    }
-//
-//    public String extractAnswer(RiddleGenerationResponse response) {
-//        return extractMessage(response).content().split("\\.", 2)[1].trim();
-//    }
-
-    public void prepareHintText(String riddle, List<Hint> hints) {
-        String riddleToReplace = "${riddle}";
-        String hintsToReplace = "${previous_hints}";
-
-        int indexOfRiddle = hintTemplate.indexOf(riddleToReplace);
-        hintTemplate.replace(indexOfRiddle,
-                indexOfRiddle + riddleToReplace.length(),
-                riddle
-        );
-
-        int indexOfHints = hintTemplate.indexOf(hintsToReplace);
-        hintTemplate.replace(indexOfHints,
-                indexOfHints + hintsToReplace.length(),
-                hints.stream()
+    public String prepareHintText(String riddle, List<Hint> hints) {
+        return hintTemplate
+                .replace("${riddle}", riddle)
+                .replace("${previous_hints}", hints.stream()
                         .map(Hint::getHint)
-                        .collect(Collectors.joining())
-        );
+                        .collect(Collectors.joining()));
     }
 
 }

@@ -14,3 +14,4 @@ Topic: Animals
 Output:
 riddle: I can be gray, I can be brown, and I bark. What am I?,
 answer: Dog
+The topic is: {topic}

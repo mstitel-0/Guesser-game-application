@@ -122,7 +122,7 @@ public class GameService {
     }
 
     public Boolean isGuessCorrect(String answer, String guess) {
-       return guess.equalsIgnoreCase(answer);
+       return answer.toLowerCase().contains(guess.toLowerCase());
     }
 
     public Boolean isMaxGuessExceeded(int guessCount) {

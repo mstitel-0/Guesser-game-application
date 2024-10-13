@@ -7,7 +7,6 @@ import org.example.gameeservice.Repositories.GameMessageRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class GameMessageService {
@@ -18,9 +17,9 @@ public class GameMessageService {
     }
 
     public void processGameMessage(GameSession gameSession, List<GameMessageDTO> gameMessageDTO) {
-        gameMessageRepository.saveAll(
-                gameMessageDTO.stream().map(dto ->
-                        new GameMessage(dto.role(), dto.message(), gameSession)
-                ).toList());
+        gameMessageRepository.saveAll(gameMessageDTO
+                .stream()
+                .map(dto -> new GameMessage(dto.role(), dto.message(), gameSession))
+                .toList());
     }
 }

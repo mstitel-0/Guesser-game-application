@@ -5,7 +5,9 @@ spring:
 application:
   services:
     authentication:
-      baseUrl: ${AUTH_SERVICE_HOST:http://localhost}:${AUTH_SERVICE_PORT:8080}
+      base-url: ${AUTH_SERVICE_HOST:http://localhost}:${AUTH_SERVICE_PORT:8080}
+    game:
+      base-url: ${GAME_SERVICE_HOST:http://localhost}:${GAME_SERVICE_PORT:8082}
 
 server:
   port: ${SERVER_PORT:8085}

@@ -17,6 +17,8 @@ public class JwtUtilTest {
 
     private static final String EMAIL = "example@gmail.com";
 
+    private static final Long USER_ID = 12312423L;
+
     @BeforeEach
     void setUp(){
         MockitoAnnotations.openMocks(this);
@@ -25,7 +27,7 @@ public class JwtUtilTest {
 
     @Test
     void testGenerateAccessToken() {
-        String token = jwtUtil.generateAccessToken(EMAIL);
+        String token = jwtUtil.generateAccessToken(EMAIL, USER_ID);
 
         assertNotNull(token);
     }

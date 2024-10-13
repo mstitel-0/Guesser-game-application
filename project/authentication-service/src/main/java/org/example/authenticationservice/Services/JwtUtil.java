@@ -23,18 +23,20 @@ public class JwtUtil {
                         .encode(JWT_SECRET.getBytes()));
     }
 
-    public String generateAccessToken(String email) {
+    public String generateAccessToken(String email, Long userId) {
         return Jwts.builder()
                 .subject(email)
+                .claim("userId", userId)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
                 .signWith(getSecretKey())
                 .compact();
     }
 
-    public String generateRefreshToken(String email) {
+    public String generateRefreshToken(String email, Long userId) {
         return Jwts.builder()
                 .subject(email)
+                .claim("userId", userId)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 12))
                 .signWith(getSecretKey())
@@ -71,7 +73,7 @@ public class JwtUtil {
         try {
             Claims claims = getAllClaims(refreshToken);
 
-            return generateAccessToken(claims.getSubject());
+            return generateAccessToken(claims.getSubject(), claims.get("userId", Long.class));
 
         } catch (ExpiredJwtException e) {
             throw new JwtException("Expired refresh token");
