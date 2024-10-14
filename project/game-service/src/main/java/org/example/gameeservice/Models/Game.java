@@ -21,7 +21,11 @@ public class Game {
     private List<Hint> hints;
     private String answer;
     private int guessesCount;
+
+    @Enumerated(EnumType.STRING)
     private GameStatus gameStatus;
+
+    @Enumerated(EnumType.STRING)
     private GameTopic gameTopic;
 
     protected Game() {

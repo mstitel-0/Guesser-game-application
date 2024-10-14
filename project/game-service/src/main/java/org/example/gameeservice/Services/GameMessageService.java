@@ -16,10 +16,11 @@ public class GameMessageService {
         this.gameMessageRepository = gameMessageRepository;
     }
 
-    public void processGameMessage(GameSession gameSession, List<GameMessageDTO> gameMessageDTO) {
+    public void processGameMessages(GameSession gameSession, List<GameMessageDTO> gameMessageDTO) {
         gameMessageRepository.saveAll(gameMessageDTO
                 .stream()
                 .map(dto -> new GameMessage(dto.role(), dto.message(), gameSession))
                 .toList());
     }
+
 }

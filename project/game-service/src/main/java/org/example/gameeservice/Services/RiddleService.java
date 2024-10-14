@@ -3,6 +3,8 @@ package org.example.gameeservice.Services;
 import static org.springframework.ai.openai.api.OpenAiApi.ChatCompletionRequest.*;
 import static org.springframework.ai.openai.api.OpenAiApi.ChatCompletionRequest.ResponseFormat.*;
 
+import jakarta.annotation.PostConstruct;
+import org.example.gameeservice.DTOs.HintDTO;
 import org.example.gameeservice.DTOs.RiddleDTO;
 import org.example.gameeservice.Enums.GameTopic;
 import org.example.gameeservice.Models.Hint;
@@ -18,15 +20,16 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class RiddleService {
 
-    private static String riddleTemplate;
+    private String riddleTemplate;
 
-    private static String hintTemplate;
+    private String hintTemplate;
 
     private final OpenAiApi openAiApi;
 
@@ -34,16 +37,23 @@ public class RiddleService {
 
     private final OpenAiChatModel openAiChatModel;
 
-    public RiddleService(OpenAiApi openAiApi,
-                         OpenAiChatOptions openAiChatOptions,
-                         @Value("classpath:riddle-generation-system-instructions.txt") Resource riddleResource,
-                         @Value("classpath:hint-generation-system-instructions.txt") Resource hintResource) throws IOException {
+    @Value("classpath:riddle-generation-system-instructions.txt")
+    private Resource riddlePath;
+
+    @Value("classpath:hint-generation-system-instructions.txt")
+    private Resource hintPath;
+
+
+    @PostConstruct
+    public void init() throws IOException {
+        this.riddleTemplate = new String(Files.readAllBytes(Paths.get(riddlePath.getURI())));
+        this.hintTemplate = new String(Files.readAllBytes(Paths.get(hintPath.getURI())));
+    }
+
+    public RiddleService(OpenAiApi openAiApi, OpenAiChatOptions openAiChatOptions) throws IOException {
         this.openAiApi = openAiApi;
         this.openAiChatOptions = openAiChatOptions;
         this.openAiChatModel = new OpenAiChatModel(openAiApi, openAiChatOptions);
-
-        riddleTemplate = Files.readString(riddleResource.getFile().toPath());
-        hintTemplate = Files.readString(hintResource.getFile().toPath());
     }
 
     private <T> T makeRequest(Class<T> responseDTO, String promptText) {
@@ -58,8 +68,8 @@ public class RiddleService {
         return makeRequest(RiddleDTO.class,  prepareRiddleText(gameTopic));
     }
 
-    public String getHint(String riddle, List<Hint> hints) {
-        return makeRequest(String.class, prepareHintText(riddle, hints));
+    public HintDTO getHint(String riddle, List<Hint> hints) {
+        return makeRequest(HintDTO.class, prepareHintText(riddle, hints));
     }
 
     public String prepareRiddleText(GameTopic gameTopic) {

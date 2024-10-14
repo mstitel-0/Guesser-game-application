@@ -7,7 +7,7 @@ public enum GameTopic {
 
     public static GameTopic topicFromString(String topic) {
         return switch (topic.toLowerCase()) {
-            case "animal" -> ANIMALS;
+            case "animals" -> ANIMALS;
             case "food" -> FOOD;
             case "cars" -> CARS;
             default -> throw new InvalidTopicException();

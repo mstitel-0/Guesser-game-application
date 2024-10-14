@@ -26,6 +26,7 @@ public class SecurityConfiguration {
 
         http.authorizeHttpRequests(request -> request
                         .requestMatchers("/auth/refresh-token").authenticated()
+                        .requestMatchers("/auth/game/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session

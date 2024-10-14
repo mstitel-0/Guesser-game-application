@@ -20,7 +20,7 @@ public class JwtUtil {
 
     public SecretKey getSecretKey() {
         return Keys.hmacShaKeyFor(Base64.getEncoder()
-                        .encode(JWT_SECRET.getBytes()));
+                .encode(JWT_SECRET.getBytes()));
     }
 
     public String generateAccessToken(String email, Long userId) {

@@ -1,13 +1,19 @@
 spring:
   profiles:
     active: dev
-  autoconfigure:
-    exclude:  org.springframework.boot.autoconfigure.jdbc.JdbcClientAutoConfiguration,
-              org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration, 
-              org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,
-              org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:32770}/${DB_NAME:game_db}
+    username: ${DB_USERNAME:admin}
+    password: ${DB_PASSWORD:admin}
+
 openai:
   api:
     gpt:
       model: gpt-4o-mini
       max-completion-tokens: 150
+server:
+  port: ${SERVER_PORT:8082}

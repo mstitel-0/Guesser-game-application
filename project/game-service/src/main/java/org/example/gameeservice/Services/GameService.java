@@ -2,6 +2,7 @@ package org.example.gameeservice.Services;
 
 import org.example.gameeservice.DTOs.GameMessageDTO;
 import org.example.gameeservice.DTOs.GameResponse;
+import org.example.gameeservice.DTOs.HintDTO;
 import org.example.gameeservice.DTOs.RiddleDTO;
 import org.example.gameeservice.Exceptions.GameEndedException;
 import org.example.gameeservice.Models.Game;
@@ -31,7 +32,7 @@ public class GameService {
 
     private final GameMessageService gameMessageService;
 
-    private static int MAX_GUESS_COUNT = 9;
+    private static final int MAX_GUESS_COUNT = 10;
 
     public GameService(GameRepository gameRepository, RiddleService riddleService, GameMessageService gameMessageService) {
         this.gameRepository = gameRepository;
@@ -40,10 +41,10 @@ public class GameService {
     }
 
     @Transactional
-    public String startNewGame(Long userId, String topic) {
-        GameSession gameSession = new GameSession(userId);
-
+    public String startNewGame(String userId, String topic) {
         GameTopic actualTopic = GameTopic.topicFromString(topic);
+
+        GameSession gameSession = new GameSession(Long.valueOf(userId));
 
         RiddleDTO riddleDTO = riddleService.getRiddle(actualTopic);
 
@@ -95,7 +96,7 @@ public class GameService {
             messages.add(new GameMessageDTO(SYSTEM_ROLE, hint));
         }
 
-        gameMessageService.processGameMessage(gameSession, messages );
+        gameMessageService.processGameMessages(gameSession, messages );
 
         return new GameResponse(responseMessage,
                 Optional.ofNullable(hint),
@@ -106,8 +107,8 @@ public class GameService {
         String hintText = null;
 
         if (isHintRequired(game.getGuessesCount())) {
-            String hint = riddleService.getHint(game.getRiddle(), game.getHints());
-            Hint newHint = new Hint(game, hint);
+            HintDTO hint = riddleService.getHint(game.getRiddle(), game.getHints());
+            Hint newHint = new Hint(game, hint.hint());
 
             game.addHint(newHint);
             gameRepository.save(game);
@@ -126,7 +127,7 @@ public class GameService {
     }
 
     public Boolean isMaxGuessExceeded(int guessCount) {
-        return guessCount == MAX_GUESS_COUNT;
+        return guessCount >= MAX_GUESS_COUNT;
     }
 
     public Boolean isHintRequired(int guessCount) {
