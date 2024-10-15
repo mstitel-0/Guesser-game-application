@@ -15,7 +15,7 @@ public class MailService {
     @Value("${spring.mail.username}")
     private String SENDER_MAIL;
 
-    @Value("${application.services.authentication.baseUrl}")
+    @Value("${application.services.authentication.base-url}")
     private String AUTH_SERVICE_HOST;
 
     private static final String AUTH_SERVICE_CONFIRMATION_PATH = "/auth/confirm?token=";

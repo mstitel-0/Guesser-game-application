@@ -16,11 +16,6 @@ public class GameController {
         this.gameService = gameService;
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<String> test(@RequestHeader() String userId) {
-        return new ResponseEntity<>(userId, HttpStatus.OK);
-    }
-
     @PostMapping("/start")
     public ResponseEntity<String> startGame(@RequestHeader(name = "X-Game-User-Id") String id, @RequestBody String topic) {
         return new ResponseEntity<>(gameService.startNewGame(id, topic), HttpStatus.OK);

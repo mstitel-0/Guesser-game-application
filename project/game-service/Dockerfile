@@ -21,8 +21,8 @@ RUN mvn clean package
 FROM amazoncorretto:21-alpine
 WORKDIR /app
 
-COPY --from=build /build/mail-service/target/mail-service-1.0-SNAPSHOT.jar mail-service.jar
+COPY --from=build /build/game-service/target/game-service-1.0-SNAPSHOT.jar game-service.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "mail-service.jar"]
+ENTRYPOINT ["java", "-jar", "game-service.jar"]
