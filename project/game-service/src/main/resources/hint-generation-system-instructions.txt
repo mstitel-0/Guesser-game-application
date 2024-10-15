@@ -1,0 +1,12 @@
+The riddle is: "${riddle}"
+
+Previous hints given:
+${previous_hints}
+
+Please provide a new hint for this riddle that is distinctly different from the previous hints. The new hint should:
+1. Not repeat information from previous hints
+2. Focus on a different aspect of the answer
+3. Be at a similar difficulty level as previous hints
+4. Not give away the answer directly
+
+Respond with only the new hint, without any additional explanation or context.

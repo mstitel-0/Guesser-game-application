@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: game-database
+  template:
+    metadata:
+      labels:
+        app: game-database
+    spec:
+      containers:
+        - name: game-database
+          image: postgres:12-alpine
+          env:
+            - name: POSTGRES_DB
+              value: game_db
+            - name: POSTGRES_USER
+              value: admin
+            - name: POSTGRES_PASSWORD
+              value:  admin
+          ports:
+            - containerPort: 5432
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: game-database
+spec:
+  selector:
+    app: game-database
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

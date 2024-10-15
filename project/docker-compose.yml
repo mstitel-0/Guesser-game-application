@@ -1,4 +1,5 @@
 services:
+
   user-database:
     image: postgres:12-alpine
     environment:
@@ -10,6 +11,15 @@ services:
     networks:
       - "my-app-network"
 
+  redis-cache:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    container_name: redis-cache
+    volumes:
+      - redis-data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+
   mail-database:
     image: postgres:12-alpine
     environment:
@@ -18,6 +28,17 @@ services:
       POSTGRES_DB: mail_db
     ports:
       - "32769:5432"
+    networks:
+      - "my-app-network"
+
+  game-database:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: game_db
+    ports:
+      - "32770:5432"
     networks:
       - "my-app-network"
 
@@ -59,7 +80,8 @@ services:
       - DB_PASSWORD=admin
       - KAFKA_HOST=kafka
       - KAFKA_PORT=9092
-      - SERVER_PORT:8080
+      - SERVER_PORT=8080
+      - JWT_SECRET=${JWT_SECRET}
     depends_on:
       - user-database
     networks:
@@ -69,6 +91,8 @@ services:
     build:
       context: .
       dockerfile: ./mail-service/Dockerfile
+    env_file:
+      - .env
     ports:
       - "8081:8081"
     environment:
@@ -79,11 +103,40 @@ services:
       - DB_PASSWORD=admin
       - KAFKA_HOST=kafka
       - KAFKA_PORT=9092
-      - AUTH_SERVICE_HOST=http://auth-service
-      - AUTH_SERVICE_PORT=8080
-      - SERVER_PORT:8081
+      - AUTH_SERVICE_HOST=http://localhost
+      - AUTH_SERVICE_PORT=8085
+      - SERVER_PORT=8081
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_AUTH=${MAIL_AUTH}
+      - MAIL_STARTTLS=${MAIL_STARTTLS}
     depends_on:
       - mail-database
+    networks:
+      - "my-app-network"
+
+  game-service:
+    build:
+      context: .
+      dockerfile: ./game-service/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "8082:8082"
+    environment:
+      - DB_HOST=game-database
+      - DB_PORT=5432
+      - DB_NAME=game_db
+      - DB_USERNAME=admin
+      - DB_PASSWORD=admin
+      - REDIS_HOST=redis-cache
+      - REDIS_PORT=6379
+      - SERVER_PORT=8082
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - game-database
     networks:
       - "my-app-network"
 
@@ -91,16 +144,22 @@ services:
     build:
       context: .
       dockerfile: ./api-gateway/Dockerfile
+    env_file:
+      - .env
     ports:
       - "8085:8085"
     environment:
       - AUTH_SERVICE_HOST=http://auth-service
       - AUTH_SERVICE_PORT=8080
-      - SERVER_PORT:8085
+      - SERVER_PORT=8085
+      - GAME_SERVICE_HOST=http://game-service
+      - GAME_SERVICE_PORT=8082
+      - JWT_SECRET=${JWT_SECRET}
     depends_on:
       - auth-service
     networks:
       - "my-app-network"
+
 
 networks:
   my-app-network:

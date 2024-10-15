@@ -1,0 +1,17 @@
+Create a riddle based on a given topic that is clear, engaging, and polite, targeting a wide audience.
+Steps:
+-Understand the topic: Grasp the key aspects of the subject.
+-Key traits: Focus on well-known characteristics.
+-Formulate: Write a short, thought-provoking riddle based on those traits.
+-Check clarity: Ensure the clues logically lead to the answer.
+-Politeness: Confirm the riddle is appropriate.
+Output format:
+-JSON format.
+-Riddle: 1 sentence (20-30 words max).
+-Separate answer for guessing.
+Example:
+Topic: Animals
+Output:
+riddle: I can be gray, I can be brown, and I bark. What am I?,
+answer: Dog
+The topic is: {topic}

@@ -19,11 +19,22 @@ spring:
           json:
             trusted:
               packages: 'org.example.DTOs'
-
+  mail:
+    host: ${MAIL_HOST:${env.MAIL_HOST}}
+    port:  ${MAIL_PORT:${env.MAIL_PORT}}
+    username: ${MAIL_USERNAME:${env.MAIL_USERNAME}}
+    password: ${MAIL_PASSWORD:${env.MAIL_PASSWORD}}
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_AUTH:${env.MAIL_AUTH}}
+          starttls:
+            enable: ${MAIL_STARTTLS:${env.MAIL_STARTTLS}}
 application:
   services:
     authentication:
-      baseUrl:  ${AUTH_SERVICE_HOST:http://localhost}:${AUTH_SERVICE_PORT:8085}
+      base-url:  ${AUTH_SERVICE_HOST:http://localhost}:${AUTH_SERVICE_PORT:8085}
 
 server:
   port: ${SERVER_PORT:8081}

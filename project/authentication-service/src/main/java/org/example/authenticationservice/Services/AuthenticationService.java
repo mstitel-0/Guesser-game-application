@@ -92,8 +92,8 @@ public class AuthenticationService {
         if (!bCryptPasswordEncoder.matches(loginRequest.password(), user.getPassword())) {
             throw new BadCredentialsException("Incorrect password");
         }
-        String accessToken = jwtUtil.generateAccessToken(loginRequest.email());
-        String refreshToken = jwtUtil.generateRefreshToken(loginRequest.email());
+        String accessToken = jwtUtil.generateAccessToken(loginRequest.email(), user.getId());
+        String refreshToken = jwtUtil.generateRefreshToken(loginRequest.email(), user.getId());
 
 
         Cookie refreshCookie = new Cookie(REFRESH_TOKEN_COOKIE_HEADER, refreshToken);

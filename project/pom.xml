@@ -10,10 +10,11 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>mail-service</module>
-        <module>authentication-service</module>
         <module>shared-dto</module>
+        <module>authentication-service</module>
+        <module>mail-service</module>
         <module>api-gateway</module>
+        <module>game-service</module>
     </modules>
 
     <properties>
@@ -23,6 +24,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <spring-cloud.version>2023.0.3</spring-cloud.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring-ai.version>1.0.0-SNAPSHOT</spring-ai.version>
     </properties>
 
     <dependencyManagement>
@@ -41,8 +43,34 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>spring-snapshots</id>
+            <name>Spring Snapshots</name>
+            <url>https://repo.spring.io/snapshot</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
 
 
     <build>

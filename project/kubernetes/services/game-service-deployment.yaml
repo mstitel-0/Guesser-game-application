@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: game-service
+  template:
+    metadata:
+      labels:
+        app: game-service
+    spec:
+      containers:
+        - name: game-service
+          image: mstitel0/game-service:latest
+          ports:
+            - containerPort: 8082
+          env:
+            - name: DB_HOST
+              value: game-database
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: game_db
+            - name: DB_USERNAME
+              value: admin
+            - name: DB_PASSWORD
+              value: admin
+            - name: REDIS_HOST
+              value: redis-cache
+            - name: REDIS_PORT
+              value: "6379"
+            - name: SERVER_PORT
+              value: "8082"
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openai-api-secret
+                  key: OPENAI_API_KEY
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: game-service
+spec:
+  selector:
+    app: game-service
+  ports:
+    - protocol: TCP
+      port: 8082
+  type: ClusterIP

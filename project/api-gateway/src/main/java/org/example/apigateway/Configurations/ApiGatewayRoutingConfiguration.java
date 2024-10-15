@@ -1,20 +1,17 @@
 package org.example.apigateway.Configurations;
 
-import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
-import io.github.resilience4j.timelimiter.TimeLimiterConfig;
+import org.example.apigateway.Security.UserIdFilter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JCircuitBreakerFactory;
-import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JConfigBuilder;
-import org.springframework.cloud.client.circuitbreaker.Customizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.ServerResponse;
 
 import java.net.URI;
-import java.time.Duration;
+
 
 import static org.springframework.cloud.gateway.server.mvc.filter.CircuitBreakerFilterFunctions.circuitBreaker;
+
 import static org.springframework.cloud.gateway.server.mvc.filter.FilterFunctions.rewritePath;
 import static org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions.route;
 import static org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions.http;
@@ -23,8 +20,17 @@ import static org.springframework.cloud.gateway.server.mvc.predicate.GatewayRequ
 @Configuration
 public class ApiGatewayRoutingConfiguration {
 
-    @Value("${application.services.authentication.baseUrl}")
+    @Value("${application.services.authentication.base-url}")
     private String AUTH_SERVICE_BASE_URL;
+
+    @Value("${application.services.game.base-url}")
+    private String GAME_SERVICE_BASE_URL;
+
+    private final UserIdFilter userIdFilter;
+
+    public ApiGatewayRoutingConfiguration(UserIdFilter userIdFilter) {
+        this.userIdFilter = userIdFilter;
+    }
 
     @Bean
     public RouterFunction<ServerResponse> authenticationRoute() {
@@ -35,4 +41,13 @@ public class ApiGatewayRoutingConfiguration {
                 .build();
     }
 
+    @Bean
+    public RouterFunction<ServerResponse> gameRoute() {
+        return route()
+                .route(path("/game/**"), http(GAME_SERVICE_BASE_URL))
+                .filter(rewritePath("/game/(?<segment>.*)", "/api/game/${segment}"))
+                .filter(circuitBreaker("gameServiceCircuitBreaker", URI.create("forward:/fallback")))
+                .filter(userIdFilter.addUserHeader())
+                .build();
+    }
 }

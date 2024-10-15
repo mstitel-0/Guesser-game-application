@@ -13,20 +13,22 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
+
     @Value("${jwt.secret}")
     private String JWT_SECRET;
 
     public SecretKey getSecretKey() {
-        return Keys.hmacShaKeyFor(Base64.getEncoder().encode(JWT_SECRET.getBytes()));
+        return Keys.hmacShaKeyFor(Base64.getEncoder()
+                .encode(JWT_SECRET.getBytes()));
     }
 
     public Claims extractClaims(String token) {
 
-            return Jwts.parser()
-                    .verifyWith(getSecretKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
+        return Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
 
     }
 
@@ -37,5 +39,9 @@ public class JwtUtil {
 
     public Boolean isExpired(String token) {
         return extractClaims(token).getExpiration().before(new Date());
+    }
+
+    public Long extractUserId(String token) {
+        return extractClaims(token).get("userId", Long.class);
     }
 }
