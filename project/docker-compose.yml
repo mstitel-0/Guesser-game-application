@@ -19,6 +19,8 @@ services:
     volumes:
       - redis-data:/data
     command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - "my-app-network"
 
   mail-database:
     image: postgres:12-alpine
@@ -160,6 +162,8 @@ services:
     networks:
       - "my-app-network"
 
+volumes:
+  redis-data:
 
 networks:
   my-app-network:

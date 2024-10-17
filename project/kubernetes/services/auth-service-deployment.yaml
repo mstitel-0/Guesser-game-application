@@ -34,6 +34,11 @@ spec:
               value: "9092"
             - name: SERVER_PORT
               value: "8080"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: openai-api-secret
+                  key: JWT_SECRET
 
 
 ---

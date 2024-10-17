@@ -12,7 +12,7 @@ spring:
       api-key: ${OPENAI_API_KEY:${env.OPENAI_API_KEY}}
   data:
     redis:
-      host: ${REDIS_PORT:localhost}
+      host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
 
 openai:

@@ -22,12 +22,17 @@ spec:
               value: "http://auth-service"
             - name: AUTH_SERVICE_PORT
               value: "8080"
-            - name: SERVER_PORT
-              value: "8085"
             - name: GAME_SERVICE_HOST
               value: "http://game-service"
             - name: GAME_SERVICE_PORT
               value: "8082"
+            - name: SERVER_PORT
+              value: "8085"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: openai-api-secret
+                  key: JWT_SECRET
 
 ---
 apiVersion: v1
