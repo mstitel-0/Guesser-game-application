@@ -38,7 +38,7 @@ The **Guesser Project** is a microservice-based application built with the Java 
 ## Features
 - **Authentication & Authorization**: Secure authentication with Spring Security, JWT tokens.
 - **API Gateway**: Centralized API Gateway for routing requests to microservices.
-- **Microservice Architecture**: Built using Spring Cloud to handle service discovery, load balancing, and fault tolerance.
+- **Microservice Architecture**: Built using Spring Cloud and Kubernetes to handle service discovery, load balancing, and fault tolerance.
 - **Database Support**: Integrated with PostgreSQL for persistent data storage.
 - **Services communication**: Uses Apache Kafka for consisten and robust services communication
 - **Caching**: Uses Redis for caching frequently accessed data to improve performance.
