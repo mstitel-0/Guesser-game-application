@@ -8,11 +8,9 @@ The **Guesser Project** is a microservice-based application built with the Java 
 - **Spring Security** for authentication and authorization.
 - **Spring Cloud** for microservice infrastructure management.
 - **API Gateway** for routing and load balancing.
-- Hosted on **AWS** infrastructure with services like EC2
+- Hosted on **AWS** infrastructure with services like EKS
 - **PostgreSQL** as the main database.
 - **Redis** for caching and optimized performance.
-
-This project serves as a robust example of how to build a scalable microservice using modern cloud-native technologies.
 
 ---
 
@@ -37,9 +35,8 @@ This project serves as a robust example of how to build a scalable microservice 
 - **Orchestration**: Kubernetes
 - **API Gateway**: Spring Cloud Gateway
 - **Cloud Hosting**: AWS (Amazon Web Services)
-- **CI/CD**: GitHub Actions (if applicable)
 ## Features
-- **Authentication & Authorization**: Secure authentication with Spring Security, supporting OAuth2 or JWT tokens.
+- **Authentication & Authorization**: Secure authentication with Spring Security, JWT tokens.
 - **API Gateway**: Centralized API Gateway for routing requests to microservices.
 - **Microservice Architecture**: Built using Spring Cloud to handle service discovery, load balancing, and fault tolerance.
 - **Database Support**: Integrated with PostgreSQL for persistent data storage.
@@ -47,7 +44,7 @@ This project serves as a robust example of how to build a scalable microservice 
 - **Caching**: Uses Redis for caching frequently accessed data to improve performance.
 - **Containerization**: The application is containerized using Docker for easy deployment.
 - **Kubernetes Orchestration**: Supports Kubernetes for scaling and managing services in production environments.
-- **AWS Hosting**: The application is hosted on AWS, leveraging services like EC2 and RDS.
+- **AWS Hosting**: The application is hosted on AWS, leveraging services like EKS and RDS.
 
 ---
 
