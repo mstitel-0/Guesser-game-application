@@ -11,6 +11,7 @@ import org.example.gameeservice.Enums.GameTopic;
 import org.example.gameeservice.Models.GameSession;
 import org.example.gameeservice.Models.Hint;
 import org.example.gameeservice.Repositories.GameRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +42,7 @@ public class GameService {
     }
 
     @Transactional
+    @CacheEvict(value = "gameCache", key = "#a0")
     public String startNewGame(String userId, String topic) {
         GameTopic actualTopic = GameTopic.topicFromString(topic);
 

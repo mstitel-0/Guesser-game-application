@@ -4,10 +4,7 @@ import org.example.gameeservice.DTOs.GameDTO;
 import org.example.gameeservice.Services.GameDataService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,8 +17,15 @@ public class GameDataController {
         this.gameDataService = gameDataService;
     }
 
+    @GetMapping("{gameId}")
+    public ResponseEntity<GameDTO> getUserGame(@RequestHeader(name = "X-Game-User-Id") String userId,
+                                           @PathVariable("gameId") String gameId) {
+        return new ResponseEntity<>(gameDataService.getUserGame(userId, gameId), HttpStatus.OK);
+    }
+
     @GetMapping("/games")
-    public ResponseEntity<List<GameDTO>> getAllUserGames(@RequestHeader(name = "X-Game-User-Id") String userId) {
-        return new ResponseEntity<>(gameDataService.getAllUserGames(userId), HttpStatus.OK);
+    public ResponseEntity<List<GameDTO>> getAllUserGames(@RequestHeader(name = "X-Game-User-Id") String userId,
+                                                         @RequestParam(name = "gameStatus",required = false) String gameStatus) {
+        return new ResponseEntity<>(gameDataService.getAllUserGames(userId, gameStatus), HttpStatus.OK);
     }
 }
