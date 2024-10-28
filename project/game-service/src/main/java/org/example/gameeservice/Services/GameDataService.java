@@ -1,7 +1,6 @@
 package org.example.gameeservice.Services;
 
 import org.example.gameeservice.DTOs.GameDTO;
-import org.example.gameeservice.DTOs.HintDTO;
 import org.example.gameeservice.Enums.GameStatus;
 import org.example.gameeservice.Exceptions.GamesNotFoundException;
 import org.example.gameeservice.Repositories.GameRepository;
@@ -9,7 +8,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class GameDataService {

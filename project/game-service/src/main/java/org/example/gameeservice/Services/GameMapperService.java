@@ -14,6 +14,7 @@ public class GameMapperService {
                         .stream()
                         .map(hint -> new HintDTO(hint.getHint()))
                         .toList(),
+                game.getGameTopic(),
                 game.getAnswer(),
                 game.getGuessesCount()
         );

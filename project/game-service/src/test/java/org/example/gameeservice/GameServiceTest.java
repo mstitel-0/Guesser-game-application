@@ -26,7 +26,6 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 public class GameServiceTest {
     @InjectMocks

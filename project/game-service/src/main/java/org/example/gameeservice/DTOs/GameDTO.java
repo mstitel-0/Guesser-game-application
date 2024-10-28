@@ -1,6 +1,7 @@
 package org.example.gameeservice.DTOs;
 
 import jakarta.validation.constraints.NotBlank;
+import org.example.gameeservice.Enums.GameTopic;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,6 +13,8 @@ public record GameDTO(
         String riddle,
         @NotBlank
         List<HintDTO> hints,
+        @NotBlank
+        GameTopic gameTopic,
         @NotBlank
         String answer,
         @NotBlank
