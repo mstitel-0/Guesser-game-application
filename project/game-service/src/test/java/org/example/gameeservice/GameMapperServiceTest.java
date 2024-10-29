@@ -1,6 +1,7 @@
 package org.example.gameeservice;
 
 import org.example.gameeservice.DTOs.GameDTO;
+import org.example.gameeservice.Enums.GameStatus;
 import org.example.gameeservice.Enums.GameTopic;
 import org.example.gameeservice.Models.Game;
 import org.example.gameeservice.Models.GameSession;
@@ -25,6 +26,7 @@ public class GameMapperServiceTest {
     public void testMapGameToGameDtoSuccessfully() {
         GameSession gameSession = new GameSession(1L);
         Game game = new Game("riddle", gameSession, "ANSWER", GameTopic.ANIMALS);
+        game.setGameStatus(GameStatus.WON);
 
         GameDTO gameDTO = gameMapperService.map(game);
 
@@ -34,5 +36,6 @@ public class GameMapperServiceTest {
         assertEquals(gameDTO.answer(), game.getAnswer());
         assertEquals(gameDTO.gameTopic(), game.getGameTopic());
         assertEquals(gameDTO.guessCount(), game.getGuessesCount());
+        assertEquals(gameDTO.gameStatus(), game.getGameStatus() );
     }
 }
