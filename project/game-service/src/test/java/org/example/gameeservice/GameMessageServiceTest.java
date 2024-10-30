@@ -8,13 +8,18 @@ import org.example.gameeservice.Repositories.GameMessageRepository;
 import org.example.gameeservice.Services.GameMessageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Collections;
 import java.util.List;
 
+@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class GameMessageServiceTest {
     @InjectMocks
     private GameMessageService gameMessageService;
