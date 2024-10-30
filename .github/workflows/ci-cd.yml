@@ -52,7 +52,7 @@ jobs:
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     strategy:
       matrix:
-        service: ['api-gateway', 'auth-service', 'mail-service', 'game-service']
+        service: ['api-gateway', 'authentication-service', 'mail-service', 'game-service']
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -62,5 +62,6 @@ jobs:
 
       - name: Build and Push Docker Image for ${{ matrix.service }}
         run: |
+          cd project
           docker build -t $DOCKER_USERNAME/${{ matrix.service }} -f ./${{ matrix.service }}/Dockerfile .
           docker push $DOCKER_USERNAME/${{ matrix.service }}
