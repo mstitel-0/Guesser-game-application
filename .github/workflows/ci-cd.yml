@@ -40,6 +40,7 @@ jobs:
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
           MAIL_AUTH: ${{ secrets.MAIL_AUTH }}
           MAIL_STARTTLS: ${{ secrets.MAIL_STARTTLS }}
+        cd: project
         run: mvn clean verify
 
   build-and-push-docker:
