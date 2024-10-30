@@ -1,0 +1,64 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Pull new code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: temurin
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Pull env vars and build
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          MAIL_AUTH: ${{ secrets.MAIL_AUTH }}
+          MAIL_STARTTLS: ${{ secrets.MAIL_STARTTLS }}
+        run: mvn clean verify
+
+  build-and-push-docker:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    strategy:
+      matrix:
+        service: ['api-gateway', 'auth-service', 'mail-service', 'game-service']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login in docker
+        run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+      - name: Build and Push Docker Image for ${{ matrix.service }}
+        run: |
+          docker build -t $DOCKER_USERNAME/${{ matrix.service }} -f ./${{ matrix.service }}/Dockerfile .
+          docker push $DOCKER_USERNAME/${{ matrix.service }}
