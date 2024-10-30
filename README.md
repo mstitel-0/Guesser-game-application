@@ -277,6 +277,8 @@ Confirm Mail
 - **Headers**:
   - `Authorization`: `Bearer <your-token>`
   - `X-Game-User-Id`: `<your-id>`
+- **Request params(opt)**:
+  - `gameStatus`: `WON/LOST/IN_PROGRESS`
 **Response**:
 - **Status**: `200 OK`
 - **Body**:
