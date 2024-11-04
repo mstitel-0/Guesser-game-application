@@ -15,6 +15,7 @@
         <module>mail-service</module>
         <module>api-gateway</module>
         <module>game-service</module>
+        <module>telegram-service</module>
     </modules>
 
     <properties>

@@ -1,0 +1,6 @@
+telegram:
+  api:
+    url: https://api.telegram.org/bot
+  bot:
+    api:
+      key: ${TELEGRAM_API_KEY:${env.TELEGRAM_API_KEY}}
