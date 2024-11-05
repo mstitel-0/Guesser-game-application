@@ -23,8 +23,8 @@ RUN mvn clean package
 FROM amazoncorretto:21-alpine
 WORKDIR /app
 
-COPY --from=build /build/game-service/target/game-service-1.0-SNAPSHOT.jar game-service.jar
+COPY --from=build /build/telegram-service/target/telegram-service-1.0-SNAPSHOT.jar telegram-service.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "game-service.jar"]
+ENTRYPOINT ["java", "-jar", "telegram-service.jar"]

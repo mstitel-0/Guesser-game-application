@@ -4,3 +4,6 @@ telegram:
   bot:
     api:
       key: ${TELEGRAM_API_KEY:${env.TELEGRAM_API_KEY}}
+
+server:
+  port: 8083

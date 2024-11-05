@@ -26,6 +26,9 @@ public class ApiGatewayRoutingConfiguration {
     @Value("${application.services.game.base-url}")
     private String GAME_SERVICE_BASE_URL;
 
+    @Value("${application.services.telegram.base-url}")
+    private String TELEGRAM_SERVICE_BASE_URL;
+
     private final UserIdFilter userIdFilter;
 
     public ApiGatewayRoutingConfiguration(UserIdFilter userIdFilter) {
@@ -48,6 +51,15 @@ public class ApiGatewayRoutingConfiguration {
                 .filter(rewritePath("/game/(?<segment>.*)", "/api/game/${segment}"))
                 .filter(circuitBreaker("gameServiceCircuitBreaker", URI.create("forward:/fallback")))
                 .filter(userIdFilter.addUserHeader())
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> apiRoute() {
+        return route()
+                .route(path("/telegram/**"), http(TELEGRAM_SERVICE_BASE_URL))
+                .filter(rewritePath("/telegram/(?<segment>.*)", "/api/telegram/webhook/${segment}"))
+                .filter(circuitBreaker("telegramServiceCircuitBreaker", URI.create("forward:/fallback")))
                 .build();
     }
 }
