@@ -57,8 +57,8 @@ public class ApiGatewayRoutingConfiguration {
     @Bean
     public RouterFunction<ServerResponse> apiRoute() {
         return route()
-                .route(path("/telegram/**"), http(TELEGRAM_SERVICE_BASE_URL))
-                .filter(rewritePath("/telegram/(?<segment>.*)", "/api/telegram/webhook/${segment}"))
+                .route(path("/telegram"), http(TELEGRAM_SERVICE_BASE_URL))
+                .filter(rewritePath("/telegram", "/api/telegram/webhook/process"))
                 .filter(circuitBreaker("telegramServiceCircuitBreaker", URI.create("forward:/fallback")))
                 .build();
     }

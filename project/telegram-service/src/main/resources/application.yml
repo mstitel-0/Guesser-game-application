@@ -1,9 +1,14 @@
 telegram:
   api:
-    url: https://api.telegram.org/bot
+    base-url: https://api.telegram.org/bot
   bot:
     api:
       key: ${TELEGRAM_API_KEY:${env.TELEGRAM_API_KEY}}
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_HOST:localhost}:${KAFKA_PORT:9092}
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 server:
   port: 8083

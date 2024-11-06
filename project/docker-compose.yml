@@ -152,6 +152,8 @@ services:
       - "8083:8083"
     environment:
       - SERVER_PORT=8083
+      - KAFKA_HOST=kafka
+      - KAFKA_PORT=9092
     networks:
       - "my-app-network"
 

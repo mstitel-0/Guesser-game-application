@@ -1,4 +1,4 @@
-package org.example.authenticationservice.DTOs;
+package org.example.DTOs;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -12,5 +12,8 @@ public record RegistrationRequest(
 
         @NotNull
         @Size(min = 5, max = 40)
-        String password) {
+        String password,
+
+        Long telegramId
+) {
 }

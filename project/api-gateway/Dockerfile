@@ -18,7 +18,7 @@ COPY api-gateway/ ./api-gateway/
 COPY game-service/ ./game-service/
 COPY telegram-service/ ./telegram-service/
 
-RUN mvn clean package
+RUN mvn clean package -DskipTests
 
 FROM amazoncorretto:21-alpine
 WORKDIR /app

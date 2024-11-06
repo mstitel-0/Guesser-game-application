@@ -13,24 +13,30 @@ public final class User {
 
     private String password;
 
+    @Column(nullable = true)
+    private Long telegramId;
+
     private boolean isActivated;
 
 
     public User() {
     }
 
-    public User(Long id, String email, String password, boolean isActivated) {
+    public User(Long id, String email, String password, Long telegramId, boolean isActivated) {
         this.id = id;
         this.email = email;
         this.password = password;
+        this.telegramId = telegramId;
         this.isActivated = isActivated;
     }
 
-    public User(String email, String password, boolean isActivated) {
+    public User(String email, String password, Long telegramId, boolean isActivated) {
         this.email = email;
         this.password = password;
+        this.telegramId = telegramId;
         this.isActivated = isActivated;
     }
+
 
 
     public Long getId() {
@@ -43,6 +49,10 @@ public final class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public Long getTelegramId() {
+        return telegramId;
     }
 
     public boolean isActivated() {

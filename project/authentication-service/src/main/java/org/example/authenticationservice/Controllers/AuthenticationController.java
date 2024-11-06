@@ -3,7 +3,7 @@ package org.example.authenticationservice.Controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.authenticationservice.DTOs.LoginRequest;
-import org.example.authenticationservice.DTOs.RegistrationRequest;
+import org.example.DTOs.RegistrationRequest;
 import org.example.authenticationservice.Services.AuthenticationService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

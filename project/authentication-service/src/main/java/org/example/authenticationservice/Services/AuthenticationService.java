@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.DTOs.MailConfirmationRequest;
 import org.example.authenticationservice.DTOs.LoginRequest;
-import org.example.authenticationservice.DTOs.RegistrationRequest;
+import org.example.DTOs.RegistrationRequest;
 import org.example.authenticationservice.Exceptions.UserNotActivatedException;
 import org.example.authenticationservice.Models.User;
 import org.example.authenticationservice.Repositories.UserRepository;
@@ -54,6 +54,7 @@ public class AuthenticationService {
         User user = new User(
                 registrationRequest.email(),
                 bCryptPasswordEncoder.encode(registrationRequest.password()),
+                registrationRequest.telegramId(),
                 false
         );
         userRepository.save(user);
@@ -76,6 +77,7 @@ public class AuthenticationService {
                 user.getId(),
                 user.getEmail(),
                 user.getPassword(),
+                user.getTelegramId(),
                 true
         );
 
