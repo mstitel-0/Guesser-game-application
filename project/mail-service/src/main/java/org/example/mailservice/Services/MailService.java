@@ -38,7 +38,7 @@ public class MailService {
         message.setTo(email);
         message.setSubject("Mail confirmation");
         message.setText("Please, follow this link to confirm your account.\n"
-                + AUTH_SERVICE_HOST + AUTH_SERVICE_CONFIRMATION_PATH + confirmationToken);
+                + "https://gull-tidy-primarily.ngrok-free.giapp" + AUTH_SERVICE_CONFIRMATION_PATH + confirmationToken);
         mailSender.send(message);
     }
 }

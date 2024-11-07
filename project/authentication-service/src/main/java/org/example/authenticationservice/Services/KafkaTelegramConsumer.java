@@ -1,6 +1,5 @@
 package org.example.authenticationservice.Services;
 
-import org.example.DTOs.MailConfirmationRequest;
 import org.example.DTOs.RegistrationRequest;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;

@@ -1,8 +1,8 @@
 package org.example.Models.enums;
 
-public enum RegistrationState {
+public enum SessionState {
     INITIAL,
     WAITING_FOR_EMAIL,
     WAITING_FOR_PASSWORD,
-    FINISHED
+    WAITING_FOR_GUESS
 }

@@ -1,7 +1,6 @@
 package org.example.gameeservice.Services;
 
-import static org.springframework.ai.openai.api.OpenAiApi.ChatCompletionRequest.*;
-import static org.springframework.ai.openai.api.OpenAiApi.ChatCompletionRequest.ResponseFormat.*;
+import static org.springframework.ai.openai.api.ResponseFormat.*;
 
 import jakarta.annotation.PostConstruct;
 import org.example.gameeservice.DTOs.HintDTO;
@@ -14,6 +13,7 @@ import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
+import org.springframework.ai.openai.api.ResponseFormat;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;

@@ -1,53 +1,66 @@
 package org.example.services;
 
-import org.example.DTOs.RegistrationRequest;
 import org.example.DTOs.TelegramMessage;
-import org.example.Models.RegistrationSession;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.example.Models.UserSession;
+import org.example.exceptions.UnexpectedCommandException;
+import org.example.services.handlers.IHandler;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+
 
 @Service
 public class TelegramService {
-    private final RegistrationSessionService registrationSessionService;
-    private final KafkaTemplate<String, RegistrationRequest> kafkaTemplate;
-    private static final String AUTHENTICATION_SERVICE_KAFKA_TOPIC = "telegram-registration";
-    private static final String EMAIL_KEY = "email";
 
-    public TelegramService(RegistrationSessionService registrationSessionService, KafkaTemplate<String, RegistrationRequest> kafkaTemplate) {
-        this.registrationSessionService = registrationSessionService;
-        this.kafkaTemplate = kafkaTemplate;
+    private final HandlerManager handlerManager;
+    private final UserSessionManager userSessionManager;
+
+    private final RestClient restClient;
+
+    public TelegramService(HandlerManager handlerManager, UserSessionManager userSessionManager, RestClient restClient) {
+        this.handlerManager = handlerManager;
+        this.userSessionManager = userSessionManager;
+        this.restClient = restClient;
     }
 
-    public String processRegistration (TelegramMessage message) {
+    public void processRequest (TelegramMessage message) {
         Long chatId = message.message().chat().id();
-        String userMessage = message.message().text();
-        RegistrationSession session = registrationSessionService.getSession(chatId);
+        UserSession session = userSessionManager.getSession(chatId);
+        String command = extractCommand(message, session);
 
-        switch (session.getState()) {
-            case INITIAL -> {
-                session.setWaitingForEmailState();
-                return "Enter your email address";
-            }
-            case WAITING_FOR_EMAIL -> {
-                session.addMessage(EMAIL_KEY, userMessage);
-                session.setWaitingForPasswordState();
-                return "Enter your password";
-            }
-            case WAITING_FOR_PASSWORD -> {
-                RegistrationRequest registrationRequest = new RegistrationRequest(
-                        session.getMessages().get(EMAIL_KEY),
-                        userMessage,
-                        message.message().user().id()
-                );
-
-                kafkaTemplate.send(AUTHENTICATION_SERVICE_KAFKA_TOPIC, registrationRequest);
-
-                registrationSessionService.endSession(chatId);
-                return "Ok";
-            }
-            default -> {
-                return "Unexpected state";
-            }
+        System.out.println(command + "- got this");
+        IHandler handler = handlerManager.getHandler(command);
+        if (!isValidHandler(handler)) {
+            sendErrorMessage(command, chatId);
+            throw new UnexpectedCommandException(command);
         }
+
+
+        sendMessage(handler.process(message, session));
+    }
+
+    public String extractCommand(TelegramMessage message, UserSession userSession) {
+        String command = userSession.getExecutingCommand();
+        System.out.println(userSession + " USER SESSIOn");
+        return command == null? message.message().text().split(" ")[0] : null;
+    }
+
+    public boolean isValidHandler(IHandler handler) {
+        return handler != null;
+    }
+
+    public void sendErrorMessage(String providedCommand, Long chatId) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText("Invalid provided command: " + providedCommand);
+        sendMessage(sendMessage);
+    }
+
+    public void sendMessage(SendMessage message) {
+        restClient.post()
+                .uri("/sendMessage")
+                .body(message)
+                .retrieve()
+                .toBodilessEntity();
     }
 }
