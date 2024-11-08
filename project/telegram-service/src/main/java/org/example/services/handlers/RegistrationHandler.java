@@ -18,6 +18,7 @@ public class RegistrationHandler implements IHandler {
     private static final String AUTHENTICATION_SERVICE_KAFKA_TOPIC = "telegram-registration";
     private static final String EMAIL_KEY = "email";
 
+
     public RegistrationHandler(UserSessionManager userSessionManager, KafkaTemplate<String, RegistrationRequest> kafkaTemplate) {
         this.userSessionManager = userSessionManager;
         this.kafkaTemplate = kafkaTemplate;
@@ -34,6 +35,7 @@ public class RegistrationHandler implements IHandler {
                 session.setState(SessionState.WAITING_FOR_EMAIL);
                 session.setExecutingCommand("/register");
                 sendMessage.setText("Provide your email address");
+                
             }
             case WAITING_FOR_EMAIL -> {
                 session.addMessage(EMAIL_KEY, userMessage);

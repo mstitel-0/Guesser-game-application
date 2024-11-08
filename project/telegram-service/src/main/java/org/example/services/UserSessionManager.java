@@ -15,11 +15,19 @@ public class UserSessionManager {
         return sessions.stream()
                 .filter(s -> s.getChatId().equals(chatId))
                 .findFirst()
-                .orElse(new UserSession(chatId, SessionState.INITIAL));
+                .orElseGet(() -> {
+                    UserSession newSession = new UserSession(chatId, SessionState.INITIAL);
+                    sessions.add(newSession);
+                    return newSession;
+                });
     }
 
     public void endSession(Long chatId) {
         sessions.removeIf(s -> s.getChatId().equals(chatId));
+    }
+
+    public List<UserSession> getSessions() {
+        return sessions;
     }
 
 }

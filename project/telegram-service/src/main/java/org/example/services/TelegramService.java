@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
+import java.util.List;
+
 
 @Service
 public class TelegramService {
@@ -24,25 +26,36 @@ public class TelegramService {
     }
 
     public void processRequest (TelegramMessage message) {
+        List<UserSession> sessions = userSessionManager.getSessions();
+
+        System.out.println("All session");
+        for(UserSession session : sessions) {
+            System.out.println(session);
+        }
         Long chatId = message.message().chat().id();
         UserSession session = userSessionManager.getSession(chatId);
-        String command = extractCommand(message, session);
 
-        System.out.println(command + "- got this");
+        System.out.println("User session: " + session);
+        String command = extractCommand(message, session);
         IHandler handler = handlerManager.getHandler(command);
+
         if (!isValidHandler(handler)) {
             sendErrorMessage(command, chatId);
             throw new UnexpectedCommandException(command);
         }
 
-
+        System.out.println("SESSION BEFORE: " + session);
         sendMessage(handler.process(message, session));
+
+        System.out.println("SESSION AFTER: " + session);
     }
 
     public String extractCommand(TelegramMessage message, UserSession userSession) {
         String command = userSession.getExecutingCommand();
-        System.out.println(userSession + " USER SESSIOn");
-        return command == null? message.message().text().split(" ")[0] : null;
+        if(command != null) return command;
+        if (message.message().text().split(" ")[0] != null) return message.message().text().split(" ")[0];
+
+        return null;
     }
 
     public boolean isValidHandler(IHandler handler) {
