@@ -22,6 +22,17 @@ services:
     networks:
       - "my-app-network"
 
+  redis-session:
+    image: redis:latest
+    ports:
+      - "6380:6380"
+    container_name: redis-session
+    volumes:
+      - redis-data:/data
+    command: [ "redis-server", "--appendonly", "yes" ]
+    networks:
+      - "my-app-network"
+
   mail-database:
     image: postgres:12-alpine
     environment:
@@ -142,6 +153,25 @@ services:
     networks:
       - "my-app-network"
 
+  telegram-service:
+    build:
+      context: .
+      dockerfile: ./telegram-service/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "8083:8083"
+    environment:
+      - SERVER_PORT=8083
+      - KAFKA_HOST=kafka
+      - KAFKA_PORT=9092
+      - REDIS_HOST=redis-session
+      - REDIS_PORT=6379
+      - GATEWAY_HOST=${GATEWAY_HOST}
+      - WEBHOOK_PATH=${WEBHOOK_PATH}
+    networks:
+      - "my-app-network"
+
   api-gateway:
     build:
       context: .
@@ -156,6 +186,8 @@ services:
       - SERVER_PORT=8085
       - GAME_SERVICE_HOST=http://game-service
       - GAME_SERVICE_PORT=8082
+      - TELEGRAM_SERVICE_HOST=http://telegram-service
+      - TELEGRAM_SERVICE_PORT=8083
       - JWT_SECRET=${JWT_SECRET}
     depends_on:
       - auth-service

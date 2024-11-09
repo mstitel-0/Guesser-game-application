@@ -1,0 +1,17 @@
+telegram:
+  bot:
+    username: RiddleGuesserGameBot
+    api:
+      key: ${TELEGRAM_API_KEY:${env.TELEGRAM_API_KEY}}
+    webhook-path: ${WEBHOOK_PATH:${env.WEBHOOK_PATH}}
+    gateway:
+      host: ${GATEWAY_HOST:${env.GATEWAY_HOST}}
+
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+server:
+  port: 8083

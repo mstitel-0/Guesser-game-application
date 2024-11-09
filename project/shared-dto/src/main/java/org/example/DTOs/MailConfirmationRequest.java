@@ -8,5 +8,6 @@ public record MailConfirmationRequest(
         @Email
         String email,
         @NotNull
-        String token) {
+        String token
+) {
 }

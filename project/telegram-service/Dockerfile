@@ -23,8 +23,8 @@ RUN mvn clean package -DskipTests
 FROM amazoncorretto:21-alpine
 WORKDIR /app
 
-COPY --from=build /build/api-gateway/target/api-gateway-1.0-SNAPSHOT.jar api-gateway.jar
+COPY --from=build /build/telegram-service/target/telegram-service-1.0-SNAPSHOT.jar telegram-service.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "api-gateway.jar"]
+ENTRYPOINT ["java", "-jar", "telegram-service.jar"]

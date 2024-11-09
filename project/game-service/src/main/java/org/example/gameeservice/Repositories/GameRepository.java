@@ -13,5 +13,5 @@ public interface GameRepository extends CrudRepository<Game, Long> {
     Optional<List<Game>> findAllByGameSessionUserId(Long userId);
     Optional<List<Game>> findAllByGameSessionUserIdAndGameStatus(Long userId, GameStatus gameStatus);
     Optional<Game> findByGameSessionUserIdAndId(Long userId, Long gameId);
-
+    Optional<Game> findFirstByGameSessionUserIdOrderByIdDesc(Long userId);
 }

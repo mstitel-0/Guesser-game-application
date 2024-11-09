@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import org.example.DTOs.MailConfirmationRequest;
-import org.example.authenticationservice.DTOs.RegistrationRequest;
+import org.example.DTOs.RegistrationRequest;
 import org.example.authenticationservice.Exceptions.UserNotActivatedException;
 import org.example.authenticationservice.Models.User;
 import org.example.authenticationservice.Repositories.UserRepository;
@@ -38,6 +38,7 @@ public class AuthenticationServiceTest {
     private static final String RAW_PASSWORD = "password";
     private static final String ENCODED_PASSWORD = "encoded_pass";
     private static final String JWT_TOKEN = "token";
+    private static final Long TELEGRAM_ID_NULL = null;
     private static final String MAIL_CONFIRMATION_TOKEN = "mail-token";
     private static final String KAFKA_MAIL_CONFIRMATION_TOPIC = "mail-confirmation";
     private static final String EMAIL_IS_TAKEN_EXCEPTION_MESSAGE = "This email is already in use";
@@ -53,8 +54,8 @@ public class AuthenticationServiceTest {
 
     @Test
     void registerUserSuccessfully(){
-        RegistrationRequest registrationRequest = new RegistrationRequest(EMAIL, RAW_PASSWORD);
-        User user = new User(EMAIL, ENCODED_PASSWORD, NOT_ACTIVATED);
+        RegistrationRequest registrationRequest = new RegistrationRequest(EMAIL, RAW_PASSWORD, TELEGRAM_ID_NULL);
+        User user = new User(EMAIL, ENCODED_PASSWORD, TELEGRAM_ID_NULL, NOT_ACTIVATED);
         MailConfirmationRequest mailConfirmationRequest = new MailConfirmationRequest(EMAIL, MAIL_CONFIRMATION_TOKEN);
 
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
@@ -75,8 +76,8 @@ public class AuthenticationServiceTest {
     }
     @Test
     void registerUserFailsEmailIsAlreadyInUse(){
-        RegistrationRequest registrationRequest = new RegistrationRequest(EMAIL, RAW_PASSWORD);
-        User user = new User(EMAIL, ENCODED_PASSWORD, NOT_ACTIVATED);
+        RegistrationRequest registrationRequest = new RegistrationRequest(EMAIL, RAW_PASSWORD, TELEGRAM_ID_NULL);
+        User user = new User(EMAIL, ENCODED_PASSWORD, TELEGRAM_ID_NULL, NOT_ACTIVATED);
 
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
 
@@ -91,8 +92,8 @@ public class AuthenticationServiceTest {
     }
     @Test
     void activatePassesSuccessfully() {
-        User user = new User(EMAIL, ENCODED_PASSWORD, NOT_ACTIVATED);
-        User expectedUser = new User(EMAIL, ENCODED_PASSWORD, ACTIVATED);
+        User user = new User(EMAIL, ENCODED_PASSWORD, TELEGRAM_ID_NULL,  NOT_ACTIVATED);
+        User expectedUser = new User(EMAIL, ENCODED_PASSWORD, TELEGRAM_ID_NULL, ACTIVATED);
 
         when(jwtUtil.verifyEmailConfirmationToken(JWT_TOKEN)).thenReturn(EMAIL);
         when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));

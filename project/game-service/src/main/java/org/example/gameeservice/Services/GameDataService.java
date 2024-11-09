@@ -42,4 +42,13 @@ public class GameDataService {
                 .map(gameMapperService::map)
                 .orElseThrow(GamesNotFoundException::new);
     }
+
+    public Long getUserMostRecentGameAnswer(String userId) {
+        return gameRepository.findFirstByGameSessionUserIdOrderByIdDesc(Long.valueOf(userId))
+                .map(game -> {
+                    GameDTO gameDTO = gameMapperService.map(game);
+                    return gameDTO.id();
+                })
+                .orElseThrow(GamesNotFoundException::new);
+    }
 }
