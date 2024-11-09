@@ -28,4 +28,9 @@ public class GameDataController {
                                                          @RequestParam(name = "gameStatus",required = false) String gameStatus) {
         return new ResponseEntity<>(gameDataService.getAllUserGames(userId, gameStatus), HttpStatus.OK);
     }
+
+    @GetMapping("/games/recent")
+    public ResponseEntity<Long> getUserMostRecentGame(@RequestHeader(name = "X-Game-User-Id") String userId) {
+        return new ResponseEntity<>(gameDataService.getUserMostRecentGameAnswer(userId), HttpStatus.OK);
+    }
 }

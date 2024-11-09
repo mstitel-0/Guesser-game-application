@@ -1,4 +1,4 @@
-package org.example.authenticationservice.DTOs;
+package org.example.DTOs;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;

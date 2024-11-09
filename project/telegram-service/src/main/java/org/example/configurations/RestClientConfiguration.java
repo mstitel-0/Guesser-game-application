@@ -8,16 +8,14 @@ import org.springframework.web.client.RestClient;
 @Configuration
 public class RestClientConfiguration {
 
-    @Value("${telegram.api.base-url}")
-    private String TELEGRAM_BASE_URL;
-
-    @Value("${telegram.bot.api.key}")
-    private String TELEGRAM_API_KEY;
+    @Value("${telegram.bot.gateway.host}")
+    private String gatewayHost;
 
     @Bean
     public RestClient restClient() {
+        System.out.println("GATEWAY URL: " + gatewayHost);
         return RestClient.builder()
-                .baseUrl(TELEGRAM_BASE_URL + TELEGRAM_API_KEY)
+                .baseUrl(gatewayHost)
                 .build();
     }
 }

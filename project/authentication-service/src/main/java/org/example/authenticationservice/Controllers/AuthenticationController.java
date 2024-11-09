@@ -2,7 +2,7 @@ package org.example.authenticationservice.Controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.authenticationservice.DTOs.LoginRequest;
+import org.example.DTOs.LoginRequest;
 import org.example.DTOs.RegistrationRequest;
 import org.example.authenticationservice.Services.AuthenticationService;
 import jakarta.validation.Valid;
@@ -30,7 +30,7 @@ public class AuthenticationController {
         return ResponseEntity.ok("Email has been successfully confirmed.");
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse) {
         return ResponseEntity.ok(authenticationService.login(loginRequest, httpServletResponse));
     }

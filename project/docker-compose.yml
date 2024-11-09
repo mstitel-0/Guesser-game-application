@@ -22,6 +22,17 @@ services:
     networks:
       - "my-app-network"
 
+  redis-session:
+    image: redis:latest
+    ports:
+      - "6380:6380"
+    container_name: redis-session
+    volumes:
+      - redis-data:/data
+    command: [ "redis-server", "--appendonly", "yes" ]
+    networks:
+      - "my-app-network"
+
   mail-database:
     image: postgres:12-alpine
     environment:
@@ -154,6 +165,10 @@ services:
       - SERVER_PORT=8083
       - KAFKA_HOST=kafka
       - KAFKA_PORT=9092
+      - REDIS_HOST=redis-session
+      - REDIS_PORT=6379
+      - GATEWAY_HOST=${GATEWAY_HOST}
+      - WEBHOOK_PATH=${WEBHOOK_PATH}
     networks:
       - "my-app-network"
 

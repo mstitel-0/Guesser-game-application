@@ -1,9 +1,6 @@
 package org.example.services;
 
-import org.example.services.handlers.IHandler;
-import org.example.services.handlers.LoginHandler;
-import org.example.services.handlers.RegistrationHandler;
-import org.example.services.handlers.StartHandler;
+import org.example.services.handlers.*;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -15,13 +12,13 @@ public class HandlerManager {
     private final static Map<String, IHandler> handlers = new HashMap<>();
 
     public HandlerManager(List<IHandler> handlersList) {
-       handlers.put("/register", handlersList
+       handlers.put("Register", handlersList
                .stream()
                .filter(handler -> handler instanceof RegistrationHandler)
                .findFirst()
                .orElse(null));
 
-        handlers.put("/login", handlersList
+        handlers.put("Login", handlersList
                 .stream()
                 .filter(handler -> handler instanceof LoginHandler)
                 .findFirst()
@@ -30,6 +27,18 @@ public class HandlerManager {
         handlers.put("/start", handlersList
                 .stream()
                 .filter(handler -> handler instanceof StartHandler)
+                .findFirst()
+                .orElse(null));
+
+        handlers.put("Start Game", handlersList
+                .stream()
+                .filter(handler -> handler instanceof StartGameHandler)
+                .findFirst()
+                .orElse(null));
+
+        handlers.put("Guess", handlersList
+                .stream()
+                .filter(handler -> handler instanceof GuessHandler)
                 .findFirst()
                 .orElse(null));
     }

@@ -26,8 +26,4 @@ public class UserSessionManager {
         sessions.removeIf(s -> s.getChatId().equals(chatId));
     }
 
-    public List<UserSession> getSessions() {
-        return sessions;
-    }
-
 }

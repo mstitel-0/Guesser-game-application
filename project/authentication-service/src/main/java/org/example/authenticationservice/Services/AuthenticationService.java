@@ -4,7 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.DTOs.MailConfirmationRequest;
-import org.example.authenticationservice.DTOs.LoginRequest;
+import org.example.DTOs.LoginRequest;
 import org.example.DTOs.RegistrationRequest;
 import org.example.authenticationservice.Exceptions.UserNotActivatedException;
 import org.example.authenticationservice.Models.User;

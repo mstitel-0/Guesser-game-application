@@ -58,7 +58,7 @@ public class ApiGatewayRoutingConfiguration {
     public RouterFunction<ServerResponse> apiRoute() {
         return route()
                 .route(path("/telegram"), http(TELEGRAM_SERVICE_BASE_URL))
-                .filter(rewritePath("/telegram", "/api/telegram/webhook/process"))
+                .filter(rewritePath("/telegram", "/api/telegram/webhook"))
                 .filter(circuitBreaker("telegramServiceCircuitBreaker", URI.create("forward:/fallback")))
                 .build();
     }
