@@ -45,7 +45,7 @@ The **Guesser Project** is a microservice-based application built with the Java 
 - **Containerization**: The application is containerized using Docker for easy deployment.
 - **Kubernetes Orchestration**: Supports Kubernetes for scaling and managing services in production environments.
 - **AWS Hosting**: The application is hosted on AWS, leveraging services like EKS and RDS.
-
+- **Telegram Bot**: The application supports interactive UI which is built using Telegram API
 ---
 
 ## Installation
