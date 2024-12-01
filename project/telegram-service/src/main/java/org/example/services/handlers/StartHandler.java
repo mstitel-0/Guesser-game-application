@@ -1,6 +1,5 @@
 package org.example.services.handlers;
 
-import org.example.DTOs.TelegramMessage;
 import org.example.Models.UserSession;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

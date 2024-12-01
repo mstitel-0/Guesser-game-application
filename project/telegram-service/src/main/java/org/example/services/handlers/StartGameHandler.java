@@ -6,6 +6,7 @@ import org.example.services.RedisService;
 import org.example.services.UserSessionManager;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -37,20 +38,26 @@ public class StartGameHandler implements IHandler {
                 sendMessage.setText("Choose one ont he following topics:\n1.Animals\n2.Cars\n3.Food");
             }
             case WAITING_FOR_TOPIC -> {
-                Long userId = update.getMessage().getFrom().getId();
-                String token = redisService.getToken(userId);
-                ResponseEntity<String> response = restClient.post()
-                        .uri("/game/start")
-                        .header("Authorization", "Bearer " + token)
-                        .body(userMessage)
-                        .retrieve()
-                        .toEntity(String.class);
+                try{
+                    if(userMessage != null) {
+                        Long userId = update.getMessage().getFrom().getId();
+                        String token = redisService.getToken(userId);
+                        System.out.println("THis is usermessage:" + userMessage);
+                        ResponseEntity<String> response = restClient.post()
+                                .uri("/game/start")
+                                .header("Authorization", "Bearer " + token)
+                                .body(userMessage)
+                                .retrieve()
+                                .toEntity(String.class);
 
-                if (response.getStatusCode().is2xxSuccessful()) {
-                    getGame(sendMessage, userId, token);
-                    sendMessage.setText("Game started: " + response.getBody());
-                } else {
-                    sendMessage.setText("Game start failed");
+                        getGame(sendMessage, userId, token);
+                        sendMessage.setText("Game started: " + response.getBody());
+                    }
+                } catch (HttpClientErrorException e) {
+                    sendMessage.setText("Game start failed:" + e.getResponseBodyAsString());
+                }
+                catch (Exception e) {
+                    sendMessage.setText("Error occurred");
                 }
                 userSessionManager.endSession(chatId);
             }
