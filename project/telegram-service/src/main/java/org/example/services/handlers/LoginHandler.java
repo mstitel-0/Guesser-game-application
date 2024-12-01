@@ -7,6 +7,7 @@ import org.example.services.RedisService;
 import org.example.services.UserSessionManager;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -52,21 +53,22 @@ public class LoginHandler implements IHandler {
                         userMessage
                 );
 
-                ResponseEntity<String> response = restClient.post()
-                        .uri("/auth/login")
-                        .body(loginRequest)
-                        .retrieve()
-                        .toEntity(String.class);
+                try{
+                    ResponseEntity<String> response = restClient.post()
+                            .uri("/auth/login")
+                            .body(loginRequest)
+                            .retrieve()
+                            .toEntity(String.class);
 
-                if (response.getStatusCode().is2xxSuccessful()) {
                     redisService.saveToken(update.getMessage().getFrom().getId(),
                             response.getBody());
 
                     sendMessage.setText("Login successful");
-                    userSessionManager.endSession(chatId);
-                } else {
-                    sendMessage.setText("Login failed");
+                } catch (HttpClientErrorException e) {
+                    sendMessage.setText("Error: " + e.getResponseBodyAsString());
                 }
+
+                userSessionManager.endSession(chatId);
             }
             default -> {
                 userSessionManager.endSession(chatId);

@@ -21,6 +21,7 @@ public class TelegramController {
     @PostMapping
     public ResponseEntity<BotApiMethod<?>> telegramStart(@RequestBody Update update) {
         System.out.println("Accepted request: " + update.getMessage().getText());
+        System.out.println("ChatID: " + update.getMessage().getChatId());
         return new ResponseEntity<>(telegramBot.onWebhookUpdateReceived(update), HttpStatus.OK);
     }
 
